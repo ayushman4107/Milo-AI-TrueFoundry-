@@ -1,0 +1,75 @@
+{
+  "kind": "scripted-provider-real-trueforge",
+  "baseUrl": "http://127.0.0.1:18790",
+  "checks": [
+    {
+      "check": "direct approval round-trip",
+      "status": "passed",
+      "toolSchemas": [
+        "get_current_datetime",
+        "review_changes"
+      ]
+    },
+    {
+      "check": "deferred approval round-trip",
+      "status": "passed",
+      "toolSchemas": [
+        "get_current_datetime",
+        "call_tool",
+        "get_tool_info",
+        "get_tool_output_schema",
+        "list_tools"
+      ]
+    },
+    {
+      "check": "denial never executes MCP handler",
+      "status": "passed",
+      "toolSchemas": [
+        "get_current_datetime",
+        "review_changes"
+      ]
+    },
+    {
+      "check": "cancel paused approval without executing tool",
+      "status": "passed",
+      "elapsedMs": 19
+    },
+    {
+      "check": "provider 401 becomes terminal turn error",
+      "status": "passed",
+      "elapsedMs": 62,
+      "state": {
+        "status": "error",
+        "message": "[Model Error] Request failed (401): Synthetic invalid credential",
+        "completedAt": "2026-11-14T15:23:14.161Z",
+        "metrics": {
+          "totalInputTokens": 0,
+          "totalOutputTokens": 0,
+          "totalTokens": 0
+        }
+      }
+    },
+    {
+      "check": "cancel active provider stream",
+      "status": "passed",
+      "elapsedMs": 17
+    },
+    {
+      "check": "compaction without sandbox",
+      "status": "passed",
+      "eventTypes": [
+        "thread.context_compaction_started",
+        "thread.context_compaction_finished"
+      ]
+    }
+  ],
+  "sessions": [
+    "01m7dafm270xzh43j8zpkkq5nb",
+    "01m7dafma82mb4zatffx086mtn",
+    "01m7dafmggtv1jpfz8mykg1w1v",
+    "01m7dafmp0h1a99hsw5j6hw5sw",
+    "01m7dafmskm4sqnw623hfjs7gr",
+    "01m7dafmvy58gdm7ne18h7b0ng",
+    "01m7dafn16yg6bjcq85bwvxpzd"
+  ]
+}
