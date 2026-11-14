@@ -24,6 +24,12 @@ importers:
       '@types/node':
         specifier: 22.15.30
         version: 22.15.30
+      '@types/vscode':
+        specifier: 1.95.0
+        version: 1.95.0
+      esbuild:
+        specifier: 0.25.12
+        version: 0.25.12
       tsx:
         specifier: 4.20.3
         version: 4.20.3
@@ -211,6 +217,9 @@ packages:
 
   '@types/node@22.15.30':
     resolution: {integrity: sha512-6Q7lr06bEHdlfplU6YRbgG1SFBdlsfNC4/lX+SkhiTs0cpJkOElmWls8PxDFv4yY/xKb8Y6SO0OmSX4wgqTZbA==}
+
+  '@types/vscode@1.95.0':
+    resolution: {integrity: sha512-0LBD8TEiNbet3NvWsmn59zLzOFu/txSlGxnv5yAFHCrhG9WvAnR3IvfHzMOs2aeWqgvNjq9pO99IUw8d3n+unw==}
 
   accepts@2.0.0:
     resolution: {integrity: sha512-5cvg6CtKwfgdmVqY1WIiXKc3Q1bkRqGLi+2W/6ao+6Y7gu/RCwRuAhGEzh5B4KlszSuTLgZYuqFqo5bImjNKng==}
@@ -710,6 +719,8 @@ snapshots:
   '@types/node@22.15.30':
     dependencies:
       undici-types: 6.21.0
+
+  '@types/vscode@1.95.0': {}
 
   accepts@2.0.0:
     dependencies:

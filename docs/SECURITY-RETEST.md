@@ -82,3 +82,13 @@ The current core must not be marketed as a fully robust coding agent. Remaining 
 - Resolution or continued exclusion of the upstream optional sandbox dependency risk.
 
 No test count proves these missing components safe. The next development milestone is integrating the hardened core into the editor, then exercising these gates against the real product.
+
+## Follow-up: integrated MVP retest
+
+The earlier “remaining release gates” list describes the previous safety-core checkpoint. The edge implementation now supplies a real editor adapter, authenticated/schema-validated MCP boundary, script-free escaped webview, revision-bound retrieval, bounded context, production TrueForge failover and a disposable-copy command runner. See [the implementation report](EDGE-IMPLEMENTATION.md) and its observed evidence.
+
+Retesting found and corrected a multiline decorator retrieval gap, aggregate overlay-load capacity gap, stale context provenance, overlay changes during asynchronous validation, and per-attempt cancellation/commit-dispatch timing gaps. No unreported path from model tools to direct editor writes was added.
+
+Remaining limits are material: no real-model task evaluation, no end-to-end Remote WSL UI rehearsal, incomplete SSE fault injection, no crash-safe save journal, no OS-level containment for arbitrary verification commands or detached descendants, and no fingerprints for external installed dependencies. Physical path resolution rejects symlinks at inspection but is not an OS-level defense against a malicious local process swapping filesystem objects. Filesystem hardlinks and adversarial races require further treatment before broader deployment. Only loaded-file inventory coverage is asserted. Upstream optional sandbox dependency risk remains unresolved and sandbox use stays disabled.
+
+62 tests, the native editor checks and the scripted-provider production-component harness workflow passed locally. These demonstrate specific tested behavior, not universal robustness or real-model coding accuracy.

@@ -1,0 +1,260 @@
+{
+  "kind": "retrieval-only-pinned-flask-3.1.3",
+  "files": 181,
+  "characters": 1152728,
+  "hits": [
+    {
+      "path": "src/flask/cli.py",
+      "revision": "bfdcfedf485dffcb01cb948345232a73d4627b3f16c70ea88a41420be50eef59",
+      "line": 1069,
+      "role": "definition",
+      "query": "routes_command"
+    },
+    {
+      "path": "src/flask/cli.py",
+      "revision": "bfdcfedf485dffcb01cb948345232a73d4627b3f16c70ea88a41420be50eef59",
+      "line": 596,
+      "role": "registration",
+      "query": "routes_command"
+    },
+    {
+      "path": "src/flask/cli.py",
+      "revision": "bfdcfedf485dffcb01cb948345232a73d4627b3f16c70ea88a41420be50eef59",
+      "line": 1070,
+      "role": "registration",
+      "query": "routes_command"
+    },
+    {
+      "path": "src/flask/cli.py",
+      "revision": "bfdcfedf485dffcb01cb948345232a73d4627b3f16c70ea88a41420be50eef59",
+      "line": 1074,
+      "role": "registration",
+      "query": "routes_command"
+    },
+    {
+      "path": "tests/test_blueprints.py",
+      "revision": "ca5578497dcdfc97a868ed737e58c1ddbd5a623c0091b0fd3ebc35f95a5bfb2f",
+      "line": 714,
+      "role": "test",
+      "query": "routes_command"
+    },
+    {
+      "path": "tests/test_blueprints.py",
+      "revision": "ca5578497dcdfc97a868ed737e58c1ddbd5a623c0091b0fd3ebc35f95a5bfb2f",
+      "line": 747,
+      "role": "test",
+      "query": "routes_command"
+    },
+    {
+      "path": "tests/test_cli.py",
+      "revision": "44e39bcfb116b0cc11d966016cfbdd00a295fa64ca5377007da9505611dd6b30",
+      "line": 470,
+      "role": "test",
+      "query": "routes_command"
+    },
+    {
+      "path": "tests/test_cli.py",
+      "revision": "44e39bcfb116b0cc11d966016cfbdd00a295fa64ca5377007da9505611dd6b30",
+      "line": 475,
+      "role": "test",
+      "query": "routes_command"
+    },
+    {
+      "path": "tests/test_cli.py",
+      "revision": "44e39bcfb116b0cc11d966016cfbdd00a295fa64ca5377007da9505611dd6b30",
+      "line": 476,
+      "role": "test",
+      "query": "routes_command"
+    },
+    {
+      "path": "tests/test_cli.py",
+      "revision": "44e39bcfb116b0cc11d966016cfbdd00a295fa64ca5377007da9505611dd6b30",
+      "line": 480,
+      "role": "test",
+      "query": "routes_command"
+    },
+    {
+      "path": "tests/test_cli.py",
+      "revision": "44e39bcfb116b0cc11d966016cfbdd00a295fa64ca5377007da9505611dd6b30",
+      "line": 484,
+      "role": "test",
+      "query": "routes_command"
+    },
+    {
+      "path": "tests/test_cli.py",
+      "revision": "44e39bcfb116b0cc11d966016cfbdd00a295fa64ca5377007da9505611dd6b30",
+      "line": 487,
+      "role": "test",
+      "query": "routes_command"
+    },
+    {
+      "path": "tests/test_cli.py",
+      "revision": "44e39bcfb116b0cc11d966016cfbdd00a295fa64ca5377007da9505611dd6b30",
+      "line": 490,
+      "role": "test",
+      "query": "routes_command"
+    },
+    {
+      "path": "tests/test_cli.py",
+      "revision": "44e39bcfb116b0cc11d966016cfbdd00a295fa64ca5377007da9505611dd6b30",
+      "line": 492,
+      "role": "test",
+      "query": "routes_command"
+    },
+    {
+      "path": "docs/design.rst",
+      "revision": "24e225474a4a05836007ad4f959f06c878485c543092bce2218e33795f46d124",
+      "line": 84,
+      "role": "documentation",
+      "query": "routes_command"
+    },
+    {
+      "path": "docs/design.rst",
+      "revision": "24e225474a4a05836007ad4f959f06c878485c543092bce2218e33795f46d124",
+      "line": 85,
+      "role": "documentation",
+      "query": "routes_command"
+    },
+    {
+      "path": "docs/design.rst",
+      "revision": "24e225474a4a05836007ad4f959f06c878485c543092bce2218e33795f46d124",
+      "line": 90,
+      "role": "documentation",
+      "query": "routes_command"
+    },
+    {
+      "path": "docs/lifecycle.rst",
+      "revision": "fbdaa35f93be9f638e74331524aaad70ff5d600a423931fbcd8f9852e01a0b60",
+      "line": 54,
+      "role": "documentation",
+      "query": "routes_command"
+    },
+    {
+      "path": "docs/patterns/lazyloading.rst",
+      "revision": "31af9dd0c74180d288f74754fda4dc2c3a97764ca0a3190f6fe4be38dadcc949",
+      "line": 103,
+      "role": "documentation",
+      "query": "routes_command"
+    },
+    {
+      "path": "docs/patterns/singlepageapplications.rst",
+      "revision": "777560ded2eee98e4cc144f9a3ee3badd920a1f8f2aa843bfe686ea74908f388",
+      "line": 6,
+      "role": "documentation",
+      "query": "routes_command"
+    },
+    {
+      "path": "docs/quickstart.rst",
+      "revision": "c0f1184f4db9d12b42e5eb8435d68c73b280b9859a507d795e3337f8fb688262",
+      "line": 315,
+      "role": "documentation",
+      "query": "routes_command"
+    },
+    {
+      "path": "CHANGES.rst",
+      "revision": "87b24abddde050d1cf99feae208511a82e06825fab2f331a34b867e0984e64a8",
+      "line": 195,
+      "role": "changelog",
+      "query": "routes_command"
+    },
+    {
+      "path": "CHANGES.rst",
+      "revision": "87b24abddde050d1cf99feae208511a82e06825fab2f331a34b867e0984e64a8",
+      "line": 795,
+      "role": "changelog",
+      "query": "routes_command"
+    },
+    {
+      "path": "CHANGES.rst",
+      "revision": "87b24abddde050d1cf99feae208511a82e06825fab2f331a34b867e0984e64a8",
+      "line": 853,
+      "role": "changelog",
+      "query": "routes_command"
+    },
+    {
+      "path": "src/flask/app.py",
+      "revision": "06fe230c4e6aef1b562596ef57bf43a146b80b3e19384684bdd9450adc5843a3",
+      "line": 160,
+      "role": "reference",
+      "query": "routes_command"
+    },
+    {
+      "path": "src/flask/cli.py",
+      "revision": "bfdcfedf485dffcb01cb948345232a73d4627b3f16c70ea88a41420be50eef59",
+      "line": 1056,
+      "role": "reference",
+      "query": "routes_command"
+    },
+    {
+      "path": "src/flask/cli.py",
+      "revision": "bfdcfedf485dffcb01cb948345232a73d4627b3f16c70ea88a41420be50eef59",
+      "line": 1063,
+      "role": "reference",
+      "query": "routes_command"
+    },
+    {
+      "path": "src/flask/sansio/app.py",
+      "revision": "46830098cbb8d28275303f13723c3cf942c27c3457776460a752c95c09db9309",
+      "line": 138,
+      "role": "reference",
+      "query": "routes_command"
+    },
+    {
+      "path": "src/flask/sansio/app.py",
+      "revision": "46830098cbb8d28275303f13723c3cf942c27c3457776460a752c95c09db9309",
+      "line": 392,
+      "role": "reference",
+      "query": "routes_command"
+    },
+    {
+      "path": "src/flask/sansio/app.py",
+      "revision": "46830098cbb8d28275303f13723c3cf942c27c3457776460a752c95c09db9309",
+      "line": 579,
+      "role": "reference",
+      "query": "routes_command"
+    },
+    {
+      "path": "src/flask/sansio/app.py",
+      "revision": "46830098cbb8d28275303f13723c3cf942c27c3457776460a752c95c09db9309",
+      "line": 580,
+      "role": "reference",
+      "query": "routes_command"
+    },
+    {
+      "path": "src/flask/sansio/app.py",
+      "revision": "46830098cbb8d28275303f13723c3cf942c27c3457776460a752c95c09db9309",
+      "line": 581,
+      "role": "reference",
+      "query": "routes_command"
+    },
+    {
+      "path": "src/flask/sansio/blueprints.py",
+      "revision": "5928682a6cb2682fcde3cccea35762f7892f31c407a5aba4c6364f8b116032eb",
+      "line": 120,
+      "role": "reference",
+      "query": "routes_command"
+    },
+    {
+      "path": "src/flask/sansio/blueprints.py",
+      "revision": "5928682a6cb2682fcde3cccea35762f7892f31c407a5aba4c6364f8b116032eb",
+      "line": 154,
+      "role": "reference",
+      "query": "routes_command"
+    },
+    {
+      "path": "src/flask/sansio/blueprints.py",
+      "revision": "5928682a6cb2682fcde3cccea35762f7892f31c407a5aba4c6364f8b116032eb",
+      "line": 155,
+      "role": "reference",
+      "query": "routes_command"
+    },
+    {
+      "path": "src/flask/sansio/blueprints.py",
+      "revision": "5928682a6cb2682fcde3cccea35762f7892f31c407a5aba4c6364f8b116032eb",
+      "line": 157,
+      "role": "reference",
+      "query": "routes_command"
+    }
+  ],
+  "contextBytes": 294
+}

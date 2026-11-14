@@ -1,0 +1,1 @@
+{"status":"passed","checks":["activation","two-file apply","Unicode/CRLF","unsaved disk preserved","stale apply rejected","snapshot undo","cancelled ticket","path escape","workbench command"]}

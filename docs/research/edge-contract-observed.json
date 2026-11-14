@@ -1,0 +1,34 @@
+{
+  "kind": "production-milo-components-scripted-provider-real-trueforge",
+  "status": "passed",
+  "checks": [
+    "provider 401 failover",
+    "old bridge revoked before fallback",
+    "trace and revision-bound read",
+    "stage then reread overlay",
+    "bounded context",
+    "same-turn approval",
+    "one local review",
+    "apply",
+    "exact undo"
+  ],
+  "switches": [
+    "bad",
+    "good"
+  ],
+  "approvals": 1,
+  "events": [
+    "turn.created",
+    "mcp.initialize",
+    "model.message",
+    "turn.done",
+    "tool.response",
+    "tool.approval_required",
+    "turn.update",
+    "user.tool_approval"
+  ],
+  "sessions": [
+    "http://127.0.0.1:18790/sessions/01m7denawdh4663619z603xde3",
+    "http://127.0.0.1:18790/sessions/01m7denb56awz9yjs7hdj9ntp3"
+  ]
+}

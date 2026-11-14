@@ -1,14 +1,111 @@
 {
   "name": "milo-ai",
-  "version": "0.1.0",
+  "displayName": "Milo AI",
+  "publisher": "ayushman4107",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "description": "Evidence-aware, reversible coding changes through TrueForge",
   "license": "MIT",
   "engines": {
-    "node": ">=22.14.0"
+    "node": ">=22.14.0",
+    "vscode": "^1.106.0"
+  },
+  "main": "./dist/extension.cjs",
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:milo.open"
+  ],
+  "extensionKind": [
+    "workspace"
+  ],
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": false
+    },
+    "virtualWorkspaces": false
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "milo.open",
+        "title": "Milo: Open workbench"
+      },
+      {
+        "command": "milo.run",
+        "title": "Milo: Run repository task"
+      },
+      {
+        "command": "milo.inline",
+        "title": "Milo: Edit selection"
+      },
+      {
+        "command": "milo.cancel",
+        "title": "Milo: Cancel run"
+      },
+      {
+        "command": "milo.undo",
+        "title": "Milo: Undo last apply"
+      },
+      {
+        "command": "milo.verify",
+        "title": "Milo: Verify applied snapshot"
+      },
+      {
+        "command": "milo.exportEvidence",
+        "title": "Milo: Export run evidence"
+      },
+      {
+        "command": "milo.recover",
+        "title": "Milo: Inspect uncertain commit"
+      }
+    ],
+    "configuration": {
+      "title": "Milo AI",
+      "properties": {
+        "milo.trueforgeUrl": {
+          "type": "string",
+          "default": "http://127.0.0.1:18790",
+          "description": "Local TrueForge origin. The editor extension and runtime must share a network namespace.",
+          "scope": "machine"
+        },
+        "milo.models": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Ordered model names already configured in TrueForge. No provider calls originate in Milo.",
+          "scope": "machine"
+        },
+        "milo.verifyExecutable": {
+          "type": "string",
+          "default": "",
+          "description": "Trusted test executable for a disposable copy of loaded files. This is not an OS sandbox.",
+          "scope": "machine"
+        },
+        "milo.verifyArgs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Arguments passed directly to the trusted verification executable; no shell interpolation.",
+          "scope": "machine"
+        },
+        "milo.pythonExecutable": {
+          "type": "string",
+          "default": "",
+          "description": "Trusted Python interpreter used for isolated AST parsing. Empty uses python3 (Linux) or python (Windows).",
+          "scope": "machine"
+        }
+      }
+    }
   },
   "scripts": {
+    "build": "node scripts/build.mjs",
     "research:contract": "node scripts/runtime-contract.mjs",
     "test": "tsx --test tests/*.test.ts",
     "typecheck": "tsc --noEmit"
@@ -21,7 +118,13 @@
   },
   "devDependencies": {
     "@types/node": "22.15.30",
+    "@types/vscode": "1.95.0",
+    "esbuild": "0.25.12",
     "tsx": "4.20.3",
     "typescript": "5.8.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ayushman4107/Milo-AI-TrueFoundry-.git"
   }
 }
