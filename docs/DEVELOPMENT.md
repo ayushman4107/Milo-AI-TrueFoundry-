@@ -90,7 +90,7 @@ This retrieval check observed 181 non-hidden source/document/config files and al
 
 ## Command and model rehearsals
 
-Build command tests with `node scripts/build.mjs --command-test`, then run `pnpm test:editor` (Linux CI uses xvfb-run). Set `MILO_VSCODE_EXECUTABLE` to use an installed editor. The runner creates an isolated profile and disposable Git workspace. Physical-key checks are in [KEYBOARD-REHEARSAL.md](KEYBOARD-REHEARSAL.md).
+Build command tests with `node scripts/build.mjs --command-test`, then run `pnpm test:editor` (Linux CI uses xvfb-run). Set `MILO_VSCODE_EXECUTABLE` to use an installed editor. The runner creates an isolated profile and disposable Git workspace, copies available evidence to ignored `test-results/command-host.json`, and removes its temporary workspace and profile on success or failure. Physical-key checks are in [KEYBOARD-REHEARSAL.md](KEYBOARD-REHEARSAL.md).
 
 [Provider research and fixes](PROVIDER-AND-REHEARSAL.md) documents free-tier limits and actual WSL setup. The example provider manifest is in examples/trueforge-model-provider.json. Configure a private key-file path with MILO_GEMINI_KEY_FILE and run scripts/configure-gemini.mjs; it makes no generation call. Model availability and project quotas must be checked before recording.
 
