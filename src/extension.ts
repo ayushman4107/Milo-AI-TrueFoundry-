@@ -20,6 +20,8 @@ export function activate(context:vscode.ExtensionContext) {
   const coordinator=new CommitCoordinator();const failover=new ModelFailover();
   let controller:AbortController|undefined;let busy=false;let lastPlan:CommitPlan|undefined;let lastPort:EditorPort|undefined;
   let lastPaths:string[]=[];let receiptId:string|undefined;const verification=new VerificationLedger();
+  let recoveryCandidate:{plan:CommitPlan;port:EditorPort;paths:string[];sessionUrl:string}|undefined;
+  let acceptedSessionUrl='';
   let panel:vscode.WebviewPanel|undefined;let sessionUrl='';let latestTimeline='';let ledger='';let status='Ready';let lastPaint=0;
   const previews=new Map<string,string>();
   context.subscriptions.push(vscode.workspace.registerTextDocumentContentProvider('milo-preview',{provideTextDocumentContent:uri=>previews.get(uri.toString())??'Preview expired'}));
@@ -49,9 +51,10 @@ export function activate(context:vscode.ExtensionContext) {
       signal.throwIfAborted();if(!picked?.length){w.cancel();return {status:'declined'};}
       const paths=[...new Set(r.proposals.map(p=>p.path))];const current=await port.read(paths,signal);signal.throwIfAborted();
       const plan=w.accept(picked.map(p=>p.id),current);await syntax(plan,signal);signal.throwIfAborted();
-      onCommit();const result=await coordinator.apply(coordinator.issue(plan),port);
-      if(result.status==='applied'||result.status==='applied_after_cancel'){lastPlan=plan;lastPort=port;lastPaths=w.files().map(f=>f.path);log(`Applied ${plan.changes.length} files to editor buffers. Python syntax checked; project tests not run. Use Save All to persist.`);}
+      onCommit();recoveryCandidate={plan,port,paths:w.files().map(f=>f.path),sessionUrl};const result=await coordinator.apply(coordinator.issue(plan),port);
+      if(result.status==='applied'||result.status==='applied_after_cancel'){lastPlan=plan;lastPort=port;lastPaths=recoveryCandidate.paths;acceptedSessionUrl=sessionUrl;log(`Applied ${plan.changes.length} files to editor buffers. Python syntax checked; project tests not run. Use Save All to persist.`);}
       else log(`Commit ${result.status}`);
+      if(result.status!=='recovery_required')recoveryCandidate=undefined;
       return result;
     }finally{signal.removeEventListener('abort',abort);token.dispose();previews.clear();}
   };
@@ -70,7 +73,7 @@ export function activate(context:vscode.ExtensionContext) {
     const models=cfg().get<string[]>('models',[]);if(!models.length)throw new Error('Set milo.models to ordered model names already configured in TrueForge.');
     if(busy)throw new Error('Another run started while the input box was open.');
     coordinator.startRun();busy=true;controller=new AbortController();const signal=AbortSignal.any([controller.signal,AbortSignal.timeout(15*60*1000)]);const cancelCommit=()=>coordinator.cancel();signal.addEventListener('abort',cancelCommit,{once:true});show();
-    let driver:TrueForgeDriver|undefined;let activeWorkbench:Workbench|undefined;let sideEffects=false;const port=new EditorPort(folder.uri.fsPath);lastPort=port;let paths:string[]=[];let baseline:Inventory|undefined;
+    let driver:TrueForgeDriver|undefined;let activeWorkbench:Workbench|undefined;let sideEffects=false;const port=new EditorPort(folder.uri.fsPath);let paths:string[]=[];let baseline:Inventory|undefined;
     try{
       const uris=await vscode.workspace.findFiles('**/*.{py,ts,tsx,js,jsx,json,md,rst,toml,yaml,yml,txt}','**/{.git,.venv,venv,node_modules,dist,build,.env,.codex,.agents}/**',1000);
       const files:Snapshot[]=[];let size=0;let excluded=0;
@@ -102,7 +105,7 @@ export function activate(context:vscode.ExtensionContext) {
   register('milo.open',show);register('milo.run',()=>run(false));register('milo.inline',()=>run(true));
   register('milo.cancel',()=>{controller?.abort();coordinator.cancel();log('Run cancelled locally; pending writes revoked.');});
   register('milo.undo',async()=>{if(busy)throw new Error('Cancel the active run before undo.');if(!lastPlan||!lastPort)throw new Error('No Milo apply to undo.');coordinator.startRun();const signal=new AbortController().signal;const inverse=inversePlan(lastPlan,await lastPort.read(lastPlan.changes.map(f=>f.path),signal));const result=await coordinator.apply(coordinator.issue(inverse),lastPort);if(result.status==='applied'){lastPlan=undefined;log('Restored exact pre-apply buffer text.');}else throw new Error(`Undo ${result.status}`);});
-  register('milo.recover',async()=>{if(!lastPort)throw new Error('No editor recovery context.');log(`Recovery: ${await coordinator.recover(lastPort)}`);});
+  register('milo.recover',async()=>{if(busy)throw new Error('Finish or cancel the active run first.');const port=recoveryCandidate?.port??lastPort;if(!port)throw new Error('No editor recovery context.');const result=await coordinator.recover(port);if(result==='applied'&&recoveryCandidate){lastPlan=recoveryCandidate.plan;lastPort=port;lastPaths=recoveryCandidate.paths;acceptedSessionUrl=recoveryCandidate.sessionUrl;}if(result==='applied'||result==='unchanged')recoveryCandidate=undefined;log(`Recovery: ${result}`);});
   register('milo.verify',async()=>{
     if(busy)throw new Error('Finish or cancel the active run first.');
     if(!lastPlan||!lastPort)throw new Error('Apply a Milo plan before verification.');
@@ -122,7 +125,7 @@ export function activate(context:vscode.ExtensionContext) {
     }finally{busy=false;controller=undefined;}
   });
   register('milo.exportEvidence',async()=>{
-    const evidence={product:'Milo AI',version:'0.2.0',exportedAt:new Date().toISOString(),sessionUrl:sessionUrl||null,
+    const evidence={product:'Milo AI',version:'0.2.0',exportedAt:new Date().toISOString(),sessionUrl:sessionUrl||null,acceptedSessionUrl:acceptedSessionUrl||null,
       acceptedChanges:lastPlan?.changes.map(f=>({path:f.path,before:digest(f.before),after:digest(f.after)}))??[],
       provenance:ledger?JSON.parse(ledger):{},verificationReceipt:receiptId??null,
       limitations:['Loaded-file inventory only','No OS sandbox for verification commands','No real-model score inferred from scripted tests']};
