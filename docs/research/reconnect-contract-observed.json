@@ -1,0 +1,43 @@
+{
+  "kind": "production-milo-components-scripted-provider-real-trueforge",
+  "status": "passed",
+  "checks": [
+    "separate read-only Scout session and evidence-bound handoff",
+    "provider 401 failover",
+    "old bridge revoked before fallback",
+    "trace and revision-bound read",
+    "stage then reread overlay",
+    "bounded context",
+    "same-turn approval",
+    "one local review",
+    "apply",
+    "exact undo"
+  ],
+  "switches": [
+    "bad",
+    "good"
+  ],
+  "approvals": 1,
+  "events": [
+    "turn.created",
+    "mcp.initialize",
+    "model.message",
+    "turn.done",
+    "tool.response",
+    "tool.approval_required",
+    "turn.update",
+    "user.tool_approval"
+  ],
+  "sessions": [
+    "http://127.0.0.1:18790/sessions/01m7djmdv8fv8m8cr7c7fmrhqd",
+    "http://127.0.0.1:18790/sessions/01m7djme27ze3cn5068497dtc4"
+  ],
+  "scoutSessions": [
+    "http://127.0.0.1:18790/sessions/01m7djmdc33qdpm195pdhz49vc"
+  ],
+  "faultInjection": {
+    "dropped": true,
+    "createdTurns": 2,
+    "subscriptions": 2
+  }
+}

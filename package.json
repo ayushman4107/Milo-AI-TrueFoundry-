@@ -2,7 +2,7 @@
   "name": "milo-ai",
   "displayName": "Milo AI",
   "publisher": "ayushman4107",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "type": "module",
   "description": "Evidence-aware, reversible coding changes through TrueForge",
@@ -60,6 +60,30 @@
       {
         "command": "milo.recover",
         "title": "Milo: Inspect uncertain commit"
+      },
+      {
+        "command": "milo.verifyDifferential",
+        "title": "Milo: Verify base versus patch"
+      },
+      {
+        "command": "milo.doctor",
+        "title": "Milo: Setup doctor"
+      },
+      {
+        "command": "milo.retry",
+        "title": "Milo: Retry with note"
+      },
+      {
+        "command": "milo.expandSelection",
+        "title": "Milo: Expand to enclosing Python function"
+      },
+      {
+        "command": "milo.saveJournal",
+        "title": "Milo: Save applied changes with journal"
+      },
+      {
+        "command": "milo.toggleSmallModel",
+        "title": "Milo: Toggle small-model preset"
       }
     ],
     "configuration": {
@@ -83,7 +107,7 @@
         "milo.verifyExecutable": {
           "type": "string",
           "default": "",
-          "description": "Trusted test executable for a disposable copy of loaded files. This is not an OS sandbox.",
+          "description": "Trusted test executable for a disposable Git-visible repository snapshot. This is not an OS sandbox.",
           "scope": "machine"
         },
         "milo.verifyArgs": {
@@ -99,6 +123,24 @@
           "type": "string",
           "default": "",
           "description": "Trusted Python interpreter used for isolated AST parsing. Empty uses python3 (Linux) or python (Windows).",
+          "scope": "machine"
+        },
+        "milo.smallModel": {
+          "type": "boolean",
+          "default": false,
+          "description": "Use shorter reads, a smaller context budget and a larger bounded iteration limit.",
+          "scope": "machine"
+        },
+        "milo.scout": {
+          "type": "boolean",
+          "default": false,
+          "description": "Run a separate read-only TrueForge Scout session before repository edits. This adds model usage.",
+          "scope": "machine"
+        },
+        "milo.verifyImport": {
+          "type": "string",
+          "default": "",
+          "description": "Python module whose import must resolve inside the temporary tree. Empty auto-detects a single src package.",
           "scope": "machine"
         }
       }

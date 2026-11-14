@@ -1,5 +1,7 @@
 # Adversarial retest and fixes
 
+Historical safety-core/0.2.0 report. [The 0.3.0 retest](ACCURACY-AND-RECOVERY.md) supersedes the earlier missing-feature lists with tested Scout separation, repository capture, dependency evidence, journal recovery, process cleanup and approval-stream fault injection. Real-model and Remote WSL demonstrations remain open gates.
+
 Date: 14 November 2026. Scope: all code currently in this repository plus its isolated TrueForge contract probe. Milo is still a core/probe checkpoint, not an installable end-to-end VS Code extension.
 
 ## Results

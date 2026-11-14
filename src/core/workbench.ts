@@ -12,6 +12,7 @@ export class Workbench {
   #state: 'staging' | 'review' | 'consumed' | 'cancelled' = 'staging';
   #readRevisions = new Map<string,string>();
   #contextExposures: { path: string; revision: string; fidelity: number; bytes: number }[] = [];
+  #analysisExposures: {path:string;revision:string;kind:string;digest:string;bytes:number}[]=[];
   constructor(files: readonly Snapshot[], private selection?: { path: string; span: Span }) {
     if(selection) this.selection = { path:selection.path,span:{...selection.span} };
     this.#batch = new ChangeBatch(selection ? { selection } : {});
@@ -19,6 +20,9 @@ export class Workbench {
   }
   #staging() { if (this.#state !== 'staging') throw new Error(`Workbench is ${this.#state}; start a new attempt`); }
   files(): Snapshot[] { return [...this.#base.keys()].map(path => ({ path, text: this.overlay.read(path).text })); }
+  addFile(file:Snapshot){this.#staging();if(this.#base.has(file.path))return;this.overlay.load(file);this.#base.set(file.path,file.text);}
+  changes(){return this.changedFiles().map(f=>({path:f.path,before:this.#base.get(f.path)!,after:f.text}));}
+  openFile(file:Snapshot){this.addFile(file);return this.provenance.register({path:file.path,revision:this.overlay.read(file.path).revision,line:1,role:'reference',query:'explicit path',excerpt:''});}
   changedFiles() { return this.files().filter(f => this.#base.get(f.path) !== f.text); }
   trace(symbol: string) { this.#staging(); return traceExemplar(this.files(), symbol).map(h => this.provenance.register(h)); }
   read(discoveryId: string, path: string, startLine: number, endLine: number) {
@@ -68,7 +72,8 @@ export class Workbench {
     this.#contextExposures.push(...packed.included.map(c => ({path:c.path,revision:this.overlay.read(c.path).revision,fidelity:c.fidelity,bytes:Buffer.byteLength(c.content)})));
     return packed;
   }
-  ledger() { return {reads:this.provenance.reads(),context:structuredClone(this.#contextExposures)}; }
+  recordAnalysis(path:string,revision:string,value:unknown){this.#staging();if(this.overlay.read(path).revision!==revision)throw new Error('Analysis revision changed; retry');if(this.#analysisExposures.length>=256)throw new Error('Analysis exposure limit');const text=JSON.stringify(value);this.#analysisExposures.push({path,revision,kind:'Python structure and name summary (not edit authorization)',digest:digest(text),bytes:Buffer.byteLength(text)});}
+  ledger() { return {reads:this.provenance.reads(),context:structuredClone(this.#contextExposures),analysis:structuredClone(this.#analysisExposures)}; }
   review() {
     this.#staging();
     // Build transactionally; a failed diff leaves the staging attempt repairable.

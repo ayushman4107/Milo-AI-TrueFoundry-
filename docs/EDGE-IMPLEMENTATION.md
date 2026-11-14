@@ -1,5 +1,7 @@
 # Edge ideas: research and implementation plan
 
+Historical 0.2.0 checkpoint. For current Scout isolation, full-tree verification, recovery, UI and reconnect results, see [0.3.0 accuracy and recovery](ACCURACY-AND-RECOVERY.md). Older limitations below are retained as development history, not current product claims.
+
 14 November 2026. The supplied notes are proposals, not evidence of implemented behavior or earned rubric scores.
 
 | Idea | Research decision | Implementation and acceptance gate |

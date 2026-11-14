@@ -14,8 +14,8 @@ pnpm build
 Press F5 with the included **Run Milo AI** launch configuration. Alternatively:
 
 ```sh
-pnpm dlx @vscode/vsce@4.1.1 package --no-dependencies --out .runtime/milo-ai-0.2.0.vsix
-code --install-extension .runtime/milo-ai-0.2.0.vsix
+pnpm dlx @vscode/vsce@4.1.1 package --no-dependencies --out .runtime/milo-ai-0.3.0.vsix
+code --install-extension .runtime/milo-ai-0.3.0.vsix
 ```
 
 Configure these user/machine settings:
@@ -32,13 +32,21 @@ Model names are placeholders: configure actual models and credentials in TrueFor
 
 Open one trusted workspace. **Milo: Run repository task** starts repository work; **Milo: Edit selection** restricts edits to selected code. The model discovers, reads and stages through MCP. Its **submit_for_review** tool opens staged diffs and a hunk multi-select. Confirming selected hunks applies them to editor buffers; Save All is separate. **Milo: Cancel run** revokes pending work. **Milo: Undo last apply** restores exact pre-apply content unless subsequent edits conflict. **Milo: Inspect uncertain commit** performs read-only recovery inspection. **Milo: Export run evidence** opens JSON with local excerpts, hashes and a session link: review it before sharing.
 
-Optional **Milo: Verify applied snapshot** uses `milo.verifyExecutable` and `milo.verifyArgs` to run a trusted command in a temporary copy of loaded files. For a self-contained Python unittest project, use your interpreter and `["-m", "unittest", "discover"]`. Arguments are passed without a shell. This is not an OS sandbox: tests can access the host and spawn descendants. External dependencies are not fingerprinted. Results cover the loaded snapshot and become stale after editor changes.
+Optional **Milo: Verify applied snapshot** uses `milo.verifyExecutable` and `milo.verifyArgs` to run a trusted command in a temporary Git-visible repository copy. For Python unittest, use your interpreter and `["-m", "unittest", "discover"]`. Arguments have no shell interpolation. API keys are not inherited; output, runtime and ordinary process trees are bounded. This is not an OS sandbox: tests can access the host. Python version, pip inventory and captured lockfiles are fingerprinted; external package contents and deliberately escaped descendants remain outside guarantees.
 
-The index accepts supported UTF-8 text files, at most 512 files and 3.5 million UTF-16 units. It excludes common dependency/build folders and obvious environment/secret filenames and reports partial coverage. It is not an exhaustive secret scanner. New/deleted/renamed files, non-UTF-8 encodings, remote URI schemes and multiple workspace roots are outside this MVP.
+The review screen offers **Verify all staged hunks** when a trusted command is configured. If requested tests changed, it runs them against base production code and the staged version. **Milo: Verify base versus patch** does the same after apply. Inspect the base failure: infrastructure failure is not regression proof. Selecting fewer hunks or rebasing requires verification again. `milo.verifyImport` checks that a module imports from the temporary tree; a single `src/<package>/__init__.py` is auto-detected. Scratch `src` leads `PYTHONPATH` to avoid accidentally importing an editable checkout.
+
+Review shortcuts: **j/k** move, **a/r** accept/reject, **u** undo a decision. Formatting-only Python files are collapsed and unchecked. **Milo: Expand to enclosing Python function** explicitly expands selection. Disjoint stale edits rebase only at unique exact anchors with a new local confirmation; overlaps stop apply.
+
+Enable `milo.scout` for a separate read-only session and advisory work order; this adds model usage. `milo.smallModel` (or **Milo: Toggle small-model preset**) reduces read/context limits and raises the bounded iteration limit. Both agents choose their own reads. **Milo: Retry with note** keeps visible context but starts a fresh attempt. **Milo: Setup doctor** checks runtime/models, Git and Python; MCP outbound permission remains unknown until a tool call succeeds.
+
+**Milo: Save applied changes with journal** explicitly saves accepted text when disk still matches its pre-apply baseline. Resolve existing unsaved baseline changes first. It fsyncs snapshots and per-file replacements and marks completion. Activation waits for recovery before new commands; incomplete saves roll back only owned post-images, preserving dirty buffers and conflicting edits. Interrupted saves can temporarily leave some files changed. Journals retain source snapshots in extension global storage. Ordinary Save All does not use this journal.
+
+Repository capture requires Git: at most 20,000 paths, 4 MB/file and 64 MB total, including binaries. Model staging remains bounded to 512 UTF-8 files and 3.5 million UTF-16 units; the agent can discover/open indexed paths within that quota. Symlinks and obvious secret paths are excluded and reported. This is not an exhaustive secret scanner. New/deleted/renamed-file edits, non-UTF-8 editing, remote URI schemes and multiple workspace roots are outside this MVP.
 
 ## Tests
 
-The current suite has 62 tests, including 1,000 seeded cases. CI runs type checking, tests, build and dependency audit on Windows and Linux. Set `MILO_PYTHON` when Python is not on PATH. Network-restricted runners must allow authenticated ephemeral localhost MCP test connections.
+The current suite has 76 tests, including 1,000 seeded cases. CI runs type checking, tests, build and dependency audit on Windows and Linux. Set `MILO_PYTHON` when Python is not on PATH. Network-restricted runners must allow authenticated ephemeral localhost MCP test connections.
 
 Build integration probes with `node scripts/build.mjs --editor-test --contract`. Launch a real editor test using an isolated profile and:
 

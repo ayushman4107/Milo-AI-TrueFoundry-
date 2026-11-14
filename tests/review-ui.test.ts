@@ -1,0 +1,22 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {runInNewContext} from 'node:vm';
+import {reviewHtml,type ReviewRow} from '../src/editor/review-html.js';
+const rows:ReviewRow[]=[{id:'source',path:'a.py',role:'source',before:'a',after:'b',formattingOnly:false,warnings:[]},{id:'noise',path:'b.py',role:'source',before:'x = 1',after:'x=1',formattingOnly:true,warnings:[]},{id:'test',path:'tests/test_a.py',role:'tests',before:'',after:'<img src=x onerror="alert(1)">',formattingOnly:false,warnings:['<script>bad()</script>']}];
+test('review escapes source HTML, collapses noise and runs keyboard decisions through explicit confirmation',()=>{
+  const html=reviewHtml(rows,[],'testnonce',true);assert(!html.includes('<img'));assert(!html.includes('<script>bad'));assert(html.includes('&lt;img'));assert.match(html,/data-noise="true"><label><input type="checkbox" >/);assert.match(html,/<details ><summary>/);
+  const script=/<script nonce="testnonce">([\s\S]*)<\/script>/.exec(html)![1]!;
+  const events:Record<string,(e:any)=>void>={};const windowEvents:Record<string,(e:any)=>void>={};const sent:any[]=[];
+  const articles=rows.map(r=>{const box={checked:!r.formattingOnly,addEventListener:(name:string,fn:(e:any)=>void)=>{events[`${r.id}:${name}`]=fn;}};return {box,dataset:{id:r.id,noise:String(r.formattingOnly)},classList:{toggle:()=>{}},scrollIntoView:()=>{},querySelector:()=>box};});
+  const controls:Record<string,{onclick?:()=>void;disabled:boolean;textContent:string}>=Object.fromEntries(['noise','confirm','cancel','verify','verification'].map(id=>[id,{disabled:false,textContent:''}]));
+  runInNewContext(script,{document:{querySelectorAll:()=>articles,getElementById:(id:string)=>controls[id],addEventListener:(n:string,f:(e:any)=>void)=>events[n]=f},window:{addEventListener:(n:string,f:(e:any)=>void)=>windowEvents[n]=f},acquireVsCodeApi:()=>({postMessage:(m:any)=>sent.push(m)})});
+  const key=(key:string)=>events.keydown!({key,preventDefault:()=>{}});
+  key('r');assert.equal(articles[0]!.box.checked,false);key('u');assert.equal(articles[0]!.box.checked,true);
+  key('j');key('a');assert.equal(articles[1]!.box.checked,true);controls.noise!.onclick!();assert.equal(articles[1]!.box.checked,false);
+  key('j');key('r');key('u');key('k');assert.equal(articles[2]!.box.checked,true);
+  articles[0]!.box.checked=false;events['source:change']!({});key('u');assert.equal(articles[0]!.box.checked,true);
+  assert.equal(sent.length,0,'decisions cannot silently submit');controls.verify!.onclick!();assert.equal(controls.confirm!.disabled,true);assert.equal(sent[0].kind,'verify');
+  windowEvents.message!({data:{token:'wrong',kind:'verification',text:'spoof'}});assert.equal(controls.confirm!.disabled,true);
+  windowEvents.message!({data:{token:'testnonce',kind:'verification',text:'<img> passed'}});assert.equal(controls.verification!.textContent,'<img> passed');assert.equal(controls.confirm!.disabled,false);
+  controls.confirm!.onclick!();assert.deepEqual(Array.from(sent[1].ids),['source','test']);controls.cancel!.onclick!();assert.equal(sent[2].kind,'cancel');
+});

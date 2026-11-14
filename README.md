@@ -12,15 +12,21 @@ A VS Code coding agent built on TrueForge for the TrueFoundry Forge-a-thon at Te
 - Authenticated localhost MCP, per-attempt cancellation fences, TrueForge SSE timeline and session links.
 - Ordered model fallback for recognized provider failures, circuit cooldown and no replay after commit dispatch.
 - Python AST validation without source execution or silent reindentation.
-- Baseline-relative loaded-file integrity, disposable-copy verification and exportable run evidence.
+- Separate read-only Scout session with capability-limited MCP and evidence-bound handoff.
+- Git-visible repository capture, binary fixtures and dirty buffers; path/symbol discovery beyond initial context.
+- Import canaries, dependency fingerprints and base-versus-patch verification before acceptance or after apply.
+- Python unresolved-name warnings, nearby conventions, enclosing-function selection and requirement evidence.
+- Keyboard review, formatting-only collapse, safe stale-edit rebasing, activity, retry notes, setup doctor and small-model presets.
+- Explicit journaled save with guarded startup recovery; approximate tokens and exportable evidence.
 
 All model execution goes through TrueForge. The model never receives a direct editor-write capability. The runtime approval opens local review; exact hunk acceptance remains host-owned and one-use. Accepted edits apply to editor buffers. Saving remains a separate editor action.
 
 ## Validation
 
-- 62 passing tests, including 1,000 seeded edit/review/undo cases; strict TypeScript and extension build pass.
+- 76 passing tests, including 1,000 seeded edit/review/undo cases; strict TypeScript and extension build pass.
 - Nine checks in a real VS Code host: activation, two-file apply, Unicode/CRLF, unsaved disk preservation, stale rejection, undo, cancellation, path containment and workbench opening.
-- Production Milo components tested against real TrueForge: forced provider 401, fallback, discovery, staging/rereading, context, same-turn approval, local review, apply and undo. The provider is deliberately scripted.
+- Production Milo components tested against real TrueForge: separate Scout, forced provider 401, fallback, discovery, staging/rereading, context, same-turn approval, local review, apply and undo. Dropping the approval stream produces one review and no extra model turn. The provider is deliberately scripted.
+- Live child-process cancellation, crash-recovery conflicts, import origins, binary copying, differential tests and review-script keyboard/message handling are covered.
 - Ten additional harness contract checks cover denial, cancellation, late approvals and compaction.
 - Retrieval tested on 181 non-hidden Flask 3.1.3 source/document/config files; all six discovery roles were found for `routes_command`.
 - Milo dependencies audit clean. The separate TrueForge optional sandbox dependency still has an unresolved advisory; sandbox use is disabled.
@@ -38,12 +44,17 @@ Use VS Code >=1.106 (locally tested with 1.146). Press F5 with the included **Ru
 
 ## Limits
 
-The read-only Scout proposal uses supported TrueForge compaction as its fallback: dynamic subagents share tools and are not advertised as isolated. Context budgets are bytes, not exact provider tokens. Inventory and verification cover loaded files, not the entire workspace. Verification runs trusted host-configured commands in a temporary copy, **not an OS sandbox**; external installed dependencies are not fingerprinted. No crash-atomic multi-file save or unrestricted filesystem transaction is claimed.
+Context budgets enforce bytes; token estimates remain approximate. Inventory covers Git-visible files plus dirty buffers, subject to explicit size/path exclusions. Ignored files and external dependencies' actual contents are outside coverage. Python version, pip inventory, lockfiles and captured bytes/modes contribute verification evidence.
 
-Real-model evaluation, Remote WSL UI validation, full Flask demonstrations, process-tree containment for arbitrary test commands and broader reconnect fault injection remain release gates.
+Verification is a trusted command in a temporary copy, **not an OS sandbox**. Environment filtering, limits and ordinary process-tree cancellation do not confine hostile code or deliberately escaped descendants. Journaled saves support guarded recovery, not cross-file atomicity or defense against malicious local filesystem races. Conflicting disk edits and dirty buffers are preserved.
+
+Name warnings and checklist evidence are advisory. Import reordering and variable renaming are not labeled harmless formatting. Retry uses fresh revisions and a steering note, not old write capabilities. Per-hunk chat is deferred. Real-model evaluation, complete Flask A/B/C demonstrations, Remote WSL UI rehearsal, broader disconnect coverage and native keyboard interaction validation remain release gates. The review layout was observed in VS Code and its script is tested; desktop automation could not complete the native keyboard exercise.
 
 ## Research and evidence
 
+- [Accuracy/recovery research and implementation](docs/ACCURACY-AND-RECOVERY.md)
+- [Real-model evaluation and rehearsal](docs/EVALUATION.md)
+- [Observed Scout and reconnect fault test](docs/research/reconnect-contract-observed.json)
 - [Twelve edge ideas: research, plan and implementation results](docs/EDGE-IMPLEMENTATION.md)
 - [Product brief](docs/research/MVP-BRIEF.md)
 - [Problem analysis](docs/research/RESEARCH.md)

@@ -21,4 +21,6 @@ for(const input of Object.keys(built.metafile.inputs).filter(p=>p.includes('node
 }
 await writeFile('dist/THIRD-PARTY-NOTICES.txt',[...notices].sort(([a],[b])=>a.localeCompare(b)).map(([,text])=>text).join('\n\n--------------------\n\n'));
 if(process.argv.includes('--editor-test'))await build({entryPoints:['tests/editor-host.ts'],outfile:'dist/editor-test.cjs',bundle:true,platform:'node',target:'node22',format:'cjs',external:['vscode'],logLevel:'info'});
+if(process.argv.includes('--review-ui'))await build({entryPoints:['tests/review-ui-host.ts'],outfile:'dist/review-ui-test.cjs',bundle:true,platform:'node',target:'node22',format:'cjs',external:['vscode'],logLevel:'info'});
 if(process.argv.includes('--contract'))await build({entryPoints:['scripts/edge-contract.ts'],outfile:'.runtime/edge-contract.cjs',bundle:true,platform:'node',target:'node22',format:'cjs',logLevel:'info'});
+if(process.argv.includes('--evaluation'))await build({entryPoints:['scripts/model-evaluation.ts'],outfile:'.runtime/model-evaluation.cjs',bundle:true,platform:'node',target:'node22',format:'cjs',logLevel:'info'});
