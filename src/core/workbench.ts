@@ -22,7 +22,7 @@ export class Workbench {
   files(): Snapshot[] { return [...this.#base.keys()].map(path => ({ path, text: this.overlay.read(path).text })); }
   addFile(file:Snapshot){this.#staging();if(this.#base.has(file.path))return;this.overlay.load(file);this.#base.set(file.path,file.text);}
   changes(){return this.changedFiles().map(f=>({path:f.path,before:this.#base.get(f.path)!,after:f.text}));}
-  openFile(file:Snapshot){this.addFile(file);const current=this.overlay.read(file.path);return {...this.provenance.register({path:file.path,revision:current.revision,line:1,role:'reference',query:'explicit path',excerpt:''}),total_lines:current.text.split(/\r?\n/).length};}
+  openFile(file:Snapshot){this.addFile(file);const current=this.overlay.read(file.path);return {...this.provenance.register({path:file.path,revision:current.revision,line:1,role:'reference',query:'explicit path',excerpt:''}),total_lines:(current.text.match(/[^\n]*\n|[^\n]+$/g)??['']).length};}
   changedFiles() { return this.files().filter(f => this.#base.get(f.path) !== f.text); }
   trace(symbol: string) { this.#staging(); return traceExemplar(this.files(), symbol).map(h => this.provenance.register(h)); }
   discover(symbol:string,budgetBytes:number,offset=0){

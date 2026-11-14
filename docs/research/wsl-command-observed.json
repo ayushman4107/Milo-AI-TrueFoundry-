@@ -4,6 +4,7 @@
     "inline, reject, decision undo, accept, apply, buffer-only save, run undo",
     "all rejected: no writes",
     "cancel: no writes and no review authority",
+    "review Cancel: prompt run cancellation and no writes",
     "default shortcut collision scan: VS Code 1.146.0, linux"
   ],
   "failures": 0,

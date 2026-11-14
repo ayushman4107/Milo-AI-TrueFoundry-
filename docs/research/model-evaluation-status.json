@@ -1,49 +1,60 @@
 {
   "date": "2026-11-15 IST",
   "billing": "User confirmed billing disabled; free quota only",
-  "status": "running",
-  "note": "A passes are behavioral/syntax/scope checks; docstrings and video remain separate. Trials used pacing and some overlapped a separate editor rehearsal; timings include queueing.",
+  "status": "partial-quota-blocked",
+  "note": "A passes are behavioral/syntax/scope checks. Manual docstring verdicts bind to output hashes; unreviewed candidates cannot count as full Task A passes. Trials used pacing and some overlapped a separate editor rehearsal; timings include queueing.",
+  "buildNotes": {
+    "gemini-final": "Bounded discovery and inline isolation; before transparent read clipping and final review-cancel/docstring-guidance repairs.",
+    "gemini-read-repair": "Read clipping enabled; deliberately interrupted to remove overlapping model runs. No completed accuracy trial.",
+    "gemini-alternative-probe": "Google OpenAI-compatible endpoint, 2.5 Pro and Flash; 404 and 429 respectively.",
+    "latest-release": "84 deterministic core tests and five command scenarios on Windows/Remote WSL pass. Final model repairs need re-evaluation after daily free quota resets."
+  },
   "summary": [
     {
       "group": "C/invalid-key",
-      "attempted": 2,
-      "passed": 2,
-      "medianReviewMs": 63325,
-      "medianFailoverMs": 336,
-      "inputTokens": 76852,
-      "outputTokens": 1844,
+      "attempted": 3,
+      "passed": 3,
+      "medianReviewMs": 67348,
+      "medianFailoverMs": 209,
+      "inputTokens": 125803,
+      "outputTokens": 3012,
       "failures": []
     },
     {
       "group": "C/closed-port",
-      "attempted": 2,
+      "attempted": 3,
       "passed": 2,
       "medianReviewMs": 42445.5,
-      "medianFailoverMs": 42,
-      "inputTokens": 81161,
-      "outputTokens": 1862,
-      "failures": []
+      "medianFailoverMs": 41,
+      "inputTokens": 126139,
+      "outputTokens": 3567,
+      "failures": [
+        "You have reached iteration limit of 12, please request again"
+      ]
     },
     {
       "group": "A/google-gemini/flash-lite",
-      "attempted": 1,
-      "passed": 1,
-      "medianReviewMs": 48391,
+      "attempted": 4,
+      "passed": 4,
+      "medianReviewMs": 46737,
       "medianFailoverMs": null,
-      "inputTokens": 27680,
-      "outputTokens": 667,
+      "inputTokens": 131681,
+      "outputTokens": 3503,
       "failures": []
     },
     {
       "group": "B/google-gemini/flash-lite",
-      "attempted": 1,
+      "attempted": 4,
       "passed": 0,
       "medianReviewMs": null,
       "medianFailoverMs": null,
-      "inputTokens": 103127,
-      "outputTokens": 1067,
+      "inputTokens": 353413,
+      "outputTokens": 3259,
       "failures": [
-        "You have reached iteration limit of 24, please request again"
+        "You have reached iteration limit of 24, please request again",
+        "You have reached iteration limit of 24, please request again",
+        "You have reached iteration limit of 24, please request again",
+        "[Model Error] Request failed (429): You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 500, model: gemini-3.5-flash-lite, description: Generate content requests per day limit exceeded on Free Tier. See https://aistudio.google.com/docs/rate-limits.\nPlease retry in 12h39m52.254821277s."
       ]
     }
   ],
@@ -539,6 +550,7 @@
           "diffPrepared": false,
           "diffRendered": null,
           "timeToDiffMs": null,
+          "failoverMs": 311,
           "elapsedMs": 98785,
           "reportedTokens": {
             "input": 42184,
@@ -590,7 +602,7 @@
     },
     {
       "label": "gemini-final",
-      "status": "running",
+      "status": "partial-quota-blocked",
       "requested": 36,
       "skipped": [
         {
@@ -603,6 +615,126 @@
           "task": "B",
           "model": "google-gemini/flash",
           "iteration": 1,
+          "reason": "Model quota blocked in an earlier attempt"
+        },
+        {
+          "task": "A",
+          "model": "google-gemini/flash",
+          "iteration": 2,
+          "reason": "Model quota blocked in an earlier attempt"
+        },
+        {
+          "task": "B",
+          "model": "google-gemini/flash",
+          "iteration": 2,
+          "reason": "Model quota blocked in an earlier attempt"
+        },
+        {
+          "task": "A",
+          "model": "google-gemini/flash",
+          "iteration": 3,
+          "reason": "Model quota blocked in an earlier attempt"
+        },
+        {
+          "task": "B",
+          "model": "google-gemini/flash",
+          "iteration": 3,
+          "reason": "Model quota blocked in an earlier attempt"
+        },
+        {
+          "task": "A",
+          "model": "google-gemini/flash",
+          "iteration": 4,
+          "reason": "Model quota blocked in an earlier attempt"
+        },
+        {
+          "task": "B",
+          "model": "google-gemini/flash",
+          "iteration": 4,
+          "reason": "Model quota blocked in an earlier attempt"
+        },
+        {
+          "task": "A",
+          "model": "google-gemini/flash-lite",
+          "iteration": 5,
+          "reason": "Model quota blocked in an earlier attempt"
+        },
+        {
+          "task": "A",
+          "model": "google-gemini/flash",
+          "iteration": 5,
+          "reason": "Model quota blocked in an earlier attempt"
+        },
+        {
+          "task": "B",
+          "model": "google-gemini/flash-lite",
+          "iteration": 5,
+          "reason": "Model quota blocked in an earlier attempt"
+        },
+        {
+          "task": "B",
+          "model": "google-gemini/flash",
+          "iteration": 5,
+          "reason": "Model quota blocked in an earlier attempt"
+        },
+        {
+          "task": "A",
+          "model": "google-gemini/flash-lite",
+          "iteration": 6,
+          "reason": "Model quota blocked in an earlier attempt"
+        },
+        {
+          "task": "A",
+          "model": "google-gemini/flash",
+          "iteration": 6,
+          "reason": "Model quota blocked in an earlier attempt"
+        },
+        {
+          "task": "A",
+          "model": "google-gemini/flash-lite",
+          "iteration": 7,
+          "reason": "Model quota blocked in an earlier attempt"
+        },
+        {
+          "task": "A",
+          "model": "google-gemini/flash",
+          "iteration": 7,
+          "reason": "Model quota blocked in an earlier attempt"
+        },
+        {
+          "task": "A",
+          "model": "google-gemini/flash-lite",
+          "iteration": 8,
+          "reason": "Model quota blocked in an earlier attempt"
+        },
+        {
+          "task": "A",
+          "model": "google-gemini/flash",
+          "iteration": 8,
+          "reason": "Model quota blocked in an earlier attempt"
+        },
+        {
+          "task": "A",
+          "model": "google-gemini/flash-lite",
+          "iteration": 9,
+          "reason": "Model quota blocked in an earlier attempt"
+        },
+        {
+          "task": "A",
+          "model": "google-gemini/flash",
+          "iteration": 9,
+          "reason": "Model quota blocked in an earlier attempt"
+        },
+        {
+          "task": "A",
+          "model": "google-gemini/flash-lite",
+          "iteration": 10,
+          "reason": "Model quota blocked in an earlier attempt"
+        },
+        {
+          "task": "A",
+          "model": "google-gemini/flash",
+          "iteration": 10,
           "reason": "Model quota blocked in an earlier attempt"
         }
       ],
@@ -663,7 +795,7 @@
           },
           "verification": "passed",
           "output": "{\"cases\": 15, \"off\": false, \"docstring\": \"Get whether debug mode should be enabled for the app, indicated by the\\n:envvar:`FLASK_DEBUG` environment variable. The default is ``False``.\\n\\nValues ``\\\"0\\\"``, ``\\\"false\\\"``, ``\\\"no\\\"``, ``\\\"off\\\"``, and ``\\\"n\\\"`` are\\ntreated as false, case-insensitively.\", \"note\": \"Docstring completeness needs review.\"}\n",
-          "docstringReview": "Required: all values including unset and empty. Behavioral pass alone is not a full Task A pass."
+          "docstringReview": "FAILED manual review: empty string not listed; unset case is not explicit. Only behavioral/syntax/scope checks passed."
         },
         {
           "task": "B",
@@ -712,6 +844,218 @@
           "reportedTokens": {
             "input": 49695,
             "output": 1164
+          }
+        },
+        {
+          "task": "A",
+          "model": "google-gemini/flash-lite",
+          "iteration": 2,
+          "status": "passed",
+          "diffPrepared": true,
+          "diffRendered": null,
+          "syntaxGate": true,
+          "scopeStayed": true,
+          "changedPaths": [
+            "src/flask/helpers.py"
+          ],
+          "filesTouched": 1,
+          "checklist": [],
+          "timeToDiffMs": 35532,
+          "elapsedMs": 40888,
+          "reportedTokens": {
+            "input": 26805,
+            "output": 665
+          },
+          "verification": "passed",
+          "output": "{\"cases\": 15, \"off\": false, \"docstring\": \"Get whether debug mode should be enabled for the app, indicated by the\\n:envvar:`FLASK_DEBUG` environment variable. The default is ``False``.\\n\\nValues ``\\\"0\\\"``, ``\\\"false\\\"``, ``\\\"off\\\"``, ``\\\"no\\\"``, and ``\\\"n\\\"`` are\\nconsidered false.\", \"note\": \"Docstring completeness needs review.\"}\n",
+          "docstringReview": "FAILED manual review: empty string not listed; unset case is not explicit. Only behavioral/syntax/scope checks passed."
+        },
+        {
+          "task": "B",
+          "model": "google-gemini/flash-lite",
+          "iteration": 2,
+          "status": "failed",
+          "error": "You have reached iteration limit of 24, please request again",
+          "diffPrepared": false,
+          "diffRendered": null,
+          "timeToDiffMs": null,
+          "elapsedMs": 152014,
+          "reportedTokens": {
+            "input": 107670,
+            "output": 928
+          }
+        },
+        {
+          "task": "C",
+          "model": "google-gemini/flash-lite",
+          "iteration": 3,
+          "failure": "invalid-key",
+          "status": "passed",
+          "diffPrepared": true,
+          "diffRendered": null,
+          "checklist": [],
+          "timeToDiffMs": 98668,
+          "failoverMs": 209,
+          "elapsedMs": 125702,
+          "reportedTokens": {
+            "input": 48951,
+            "output": 1168
+          }
+        },
+        {
+          "task": "C",
+          "model": "google-gemini/flash-lite",
+          "iteration": 3,
+          "failure": "closed-port",
+          "status": "failed",
+          "error": "You have reached iteration limit of 12, please request again",
+          "diffPrepared": false,
+          "diffRendered": null,
+          "timeToDiffMs": null,
+          "failoverMs": 35,
+          "elapsedMs": 67206,
+          "reportedTokens": {
+            "input": 44978,
+            "output": 1705
+          }
+        },
+        {
+          "task": "A",
+          "model": "google-gemini/flash-lite",
+          "iteration": 3,
+          "status": "passed",
+          "diffPrepared": true,
+          "diffRendered": null,
+          "syntaxGate": true,
+          "scopeStayed": true,
+          "changedPaths": [
+            "src/flask/helpers.py"
+          ],
+          "filesTouched": 1,
+          "checklist": [],
+          "timeToDiffMs": 45083,
+          "elapsedMs": 50080,
+          "reportedTokens": {
+            "input": 36824,
+            "output": 1079
+          },
+          "verification": "passed",
+          "output": "{\"cases\": 15, \"off\": false, \"docstring\": \"Get whether debug mode should be enabled for the app, indicated by the\\n:envvar:`FLASK_DEBUG` environment variable. The default is ``False``.\\n\\nValues ``\\\"0\\\"``, ``\\\"false\\\"``, ``\\\"off\\\"``, ``\\\"no\\\"``, and ``\\\"n\\\"`` are\\nconsidered false.\", \"note\": \"Docstring completeness needs review.\"}\n",
+          "docstringReview": "FAILED manual review: empty string not listed; unset case is not explicit. Only behavioral/syntax/scope checks passed."
+        },
+        {
+          "task": "B",
+          "model": "google-gemini/flash-lite",
+          "iteration": 3,
+          "status": "failed",
+          "error": "You have reached iteration limit of 24, please request again",
+          "diffPrepared": false,
+          "diffRendered": null,
+          "timeToDiffMs": null,
+          "elapsedMs": 120462,
+          "reportedTokens": {
+            "input": 101362,
+            "output": 772
+          }
+        },
+        {
+          "task": "A",
+          "model": "google-gemini/flash-lite",
+          "iteration": 4,
+          "status": "passed",
+          "diffPrepared": true,
+          "diffRendered": null,
+          "syntaxGate": true,
+          "scopeStayed": true,
+          "changedPaths": [
+            "src/flask/helpers.py"
+          ],
+          "filesTouched": 1,
+          "checklist": [],
+          "timeToDiffMs": 49467,
+          "elapsedMs": 55322,
+          "reportedTokens": {
+            "input": 40372,
+            "output": 1092
+          },
+          "verification": "passed",
+          "output": "{\"cases\": 15, \"off\": false, \"docstring\": \"Get whether debug mode should be enabled for the app, indicated by the\\n:envvar:`FLASK_DEBUG` environment variable. The default is ``False``.\\n\\nValues ``0``, ``false``, ``off``, ``no``, and ``n`` are treated as ``False``\\ncase-insensitively.\", \"note\": \"Docstring completeness needs review.\"}\n",
+          "docstringReview": "FAILED manual review: empty string not listed; unset case is not explicit. Only behavioral/syntax/scope checks passed."
+        },
+        {
+          "task": "B",
+          "model": "google-gemini/flash-lite",
+          "iteration": 4,
+          "status": "quota-blocked",
+          "error": "[Model Error] Request failed (429): You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 500, model: gemini-3.5-flash-lite, description: Generate content requests per day limit exceeded on Free Tier. See https://aistudio.google.com/docs/rate-limits.\nPlease retry in 12h39m52.254821277s.",
+          "diffPrepared": false,
+          "diffRendered": null,
+          "timeToDiffMs": null,
+          "elapsedMs": 56031,
+          "reportedTokens": {
+            "input": 41254,
+            "output": 492
+          }
+        }
+      ]
+    },
+    {
+      "label": "gemini-read-repair",
+      "status": "interrupted",
+      "requested": 10,
+      "skipped": [],
+      "rows": [
+        {
+          "task": "B",
+          "model": "google-gemini/flash-lite",
+          "iteration": 1,
+          "status": "failed",
+          "error": "This operation was aborted",
+          "diffPrepared": false,
+          "diffRendered": null,
+          "timeToDiffMs": null,
+          "elapsedMs": 219995,
+          "reportedTokens": {
+            "input": 95737,
+            "output": 797
+          }
+        }
+      ]
+    },
+    {
+      "label": "gemini-alternative-probe",
+      "status": "completed",
+      "requested": 2,
+      "skipped": [],
+      "rows": [
+        {
+          "task": "B",
+          "model": "milo-gemini-legacy/pro",
+          "iteration": 1,
+          "status": "failed",
+          "error": "[Model Error] Request failed (404): Not Found",
+          "diffPrepared": false,
+          "diffRendered": null,
+          "timeToDiffMs": null,
+          "elapsedMs": 434,
+          "reportedTokens": {
+            "input": 0,
+            "output": 0
+          }
+        },
+        {
+          "task": "B",
+          "model": "milo-gemini-legacy/flash",
+          "iteration": 1,
+          "status": "quota-blocked",
+          "error": "[Model Error] Request failed (429): Too Many Requests",
+          "diffPrepared": false,
+          "diffRendered": null,
+          "timeToDiffMs": null,
+          "elapsedMs": 16681,
+          "reportedTokens": {
+            "input": 8022,
+            "output": 129
           }
         }
       ]

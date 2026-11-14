@@ -2,7 +2,7 @@
 
 A VS Code coding agent built on TrueForge for the TrueFoundry Forge-a-thon at Techfest, IIT Bombay. It makes repository context visible and changes reviewable and reversible.
 
-**Status:** an implemented VS Code MVP with tested editor, MCP and TrueForge integrations. Real Gemini evaluation is in progress; free-tier quota and model iteration failures are recorded. This is not a production-hardening claim.
+**Status:** an implemented VS Code MVP with tested editor, MCP and TrueForge integrations. Real Gemini trials exposed incomplete Task A docstrings and Task B failures; daily free quota blocked the remaining runs. The full submission is not yet validated.
 
 ## Working features
 
@@ -24,7 +24,7 @@ All model execution goes through TrueForge. The model never receives a direct ed
 ## Validation
 
 - 84 passing tests, including 1,000 seeded edit/review/undo cases; strict TypeScript and extension build pass.
-- Four public-command scenarios also pass on Windows and Remote WSL, with default-shortcut collision checks and host-owned hunk decisions.
+- Five public-command scenarios pass on Windows and Remote WSL, including review cancellation, default-shortcut collision checks and host-owned hunk decisions.
 - Nine checks in a real VS Code host: activation, two-file apply, Unicode/CRLF, unsaved disk preservation, stale rejection, undo, cancellation, path containment and workbench opening.
 - Production Milo components tested against real TrueForge: separate Scout, forced provider 401, fallback, discovery, staging/rereading, context, same-turn approval, local review, apply and undo. Dropping the approval stream produces one review and no extra model turn. The provider is deliberately scripted.
 - Live child-process cancellation, crash-recovery conflicts, import origins, binary copying, differential tests and review-script keyboard/message handling are covered.

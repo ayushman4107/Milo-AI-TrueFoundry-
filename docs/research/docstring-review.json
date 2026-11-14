@@ -1,0 +1,26 @@
+{
+  "date": "2026-11-15 IST",
+  "source": "gemini-final",
+  "reviews": [
+    {
+      "outputSHA256": "0d11399de28b0d5c8730185b56ee751f7c23f891195588ee375f426c03f35ea9",
+      "iteration": 1,
+      "review": "FAILED manual review: empty string not listed; unset case is not explicit. Only behavioral/syntax/scope checks passed."
+    },
+    {
+      "outputSHA256": "912a5d03894e2b15814b62dc146066ff4e3f2ed4040f4857b630f956099bc843",
+      "iteration": 2,
+      "review": "FAILED manual review: empty string not listed; unset case is not explicit. Only behavioral/syntax/scope checks passed."
+    },
+    {
+      "outputSHA256": "912a5d03894e2b15814b62dc146066ff4e3f2ed4040f4857b630f956099bc843",
+      "iteration": 3,
+      "review": "FAILED manual review: empty string not listed; unset case is not explicit. Only behavioral/syntax/scope checks passed."
+    },
+    {
+      "outputSHA256": "8657ac4f68d458379bf70da35d911eb2416d816788d7f9476ce36687a1f4a9c8",
+      "iteration": 4,
+      "review": "FAILED manual review: empty string not listed; unset case is not explicit. Only behavioral/syntax/scope checks passed."
+    }
+  ]
+}

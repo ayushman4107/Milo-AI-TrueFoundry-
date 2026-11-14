@@ -76,7 +76,7 @@ export function activate(context:vscode.ExtensionContext) {
         return `All staged hunks: ${fresh?result.receipt.status:'stale — workspace changed'}. ${tree.files.length} Git-visible files; ${tree.excluded.length} exclusions.\n${paired?`${paired.status}\nBase output:\n${paired.base.output.slice(-3000)}\n${paired.note}\n`:''}Patched output:\n${result.output.slice(-3000)}\nImport: ${result.canary}\nDependencies: ${JSON.stringify(result.dependency)}\nSelecting fewer hunks or rebasing requires verification again after apply.`;
       }:undefined;
       const picked=await keyboardReview(items,checks,signal,verifyStaged);
-      signal.throwIfAborted();if(!picked?.length){w.cancel();return {status:'declined'};}
+      signal.throwIfAborted();if(!picked?.length){w.cancel();controller?.abort();return {status:'declined'};}
       const paths=[...new Set(r.proposals.map(p=>p.path))];const current=await port.read(paths,signal);signal.throwIfAborted();
       const accepted=w.accept(picked,new Map(changes.map(f=>[f.path,f.before])));
       const plan={...accepted,changes:accepted.changes.map(f=>rebaseChange(f,current.get(f.path)!))};
@@ -133,7 +133,7 @@ export function activate(context:vscode.ExtensionContext) {
         onEvent:(timeline,url)=>{sessionUrl=url;for(const e of timeline.snapshot())if(e.type==='model.message'&&e.usage&&!e.reasoningContent&&!e.toolCalls?.length&&typeof e.content==='string'&&!usageSeen.has(e.id)){usageSeen.add(e.id);tokenEstimate.observeOutput(currentModel,e.content,e.usage.outputTokens);}latestTimeline=timeline.display().map(e=>`${e.type}${e.tools.length?' '+e.tools.join(', '):''}\n${e.text}`).join('\n');ledger=JSON.stringify(activeWorkbench?.ledger() ?? {},null,2);paint();},
       });
       const result=await failover.run({models,request:`${request}\nIndexed repository: ${files.length} loaded files.${selection?' Only the selected file is available in inline mode.':' Use list_repository/open_repository_file for the full index.'}${handoff?`\nRead-only Scout work order (advisory, choose your own reads and edits): ${handoff}`:''}${selection?`\nInline scope: ${selection.path}, UTF-16 ${selection.span.start}–${selection.span.end}.${selectedIdentifier?` Selected identifier: ${selectedIdentifier}. Trace this identifier first.`:''}`:''}`,signal,driver,hasSideEffects:()=>sideEffects,onSwitch:model=>{currentModel=model;log(`Running via TrueForge: ${model} (${smallModel?'small':'standard'} preset)`);}});log(result);
-    }finally{
+    }catch(error){if(signal.aborted){log(controller.signal.aborted?'Run cancelled locally; staged writes revoked.':'Run timed out; staged writes revoked.');return;}throw error;}finally{
       try{await driver?.abandon();}catch(e){output.appendLine(`Cleanup requires attention: ${String(e)}`);}
       if(baselineTree){try{const after=await captureRepository(folder.uri.fsPath,buffers(folder.uri.fsPath));log(`${status}. Git-visible tree: ${after.fingerprint===baselineTree.fingerprint?'unchanged from baseline':'changed'}; exclusions ${after.excluded.length}. Ignored external files are outside coverage.`);}catch(e){output.appendLine(`Integrity unavailable: ${String(e)}`);}}
       signal.removeEventListener('abort',cancelCommit);busy=false;controller=undefined;paint(true);

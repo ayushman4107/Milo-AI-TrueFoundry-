@@ -15,10 +15,10 @@ Research and experiments: 15 November 2026 IST. API use is authorized only withi
 
 1. Discover models without printing credentials; configure two named TrueForge models; retain failed pilots.
 2. Expand the immutable-snapshot benchmark to A/B/C, baseline identity, native Python checks, checkpoints, latency and provider token usage. Never run destructive checkout-clean commands in a user's workspace.
-3. Fix tool-argument problems before speed: state the inclusive read limit, distinguish filenames from identifiers, and support exact-text staging with all existing read/revision/selection checks. Inline mode now loads only its selected file and caps the run at 12 iterations; small repository runs cap at 24.
+3. Fix tool-argument problems before speed: clip oversized/EOF reads with explicit returned bounds, distinguish filenames from identifiers, and support exact-text staging with all existing read/revision/selection checks. Paginated exemplar results retain diverse roles within a candidate-byte budget. Inline mode loads only its selected file, includes the selected function identifier and caps the run at 12 iterations; small repository runs cap at 24.
 4. Recognize the observed terminal errors. Generic HTTP 400 is a provider rejection, not proof of invalid authentication. Fallback still requires old-session revocation and no dispatched writes; assistant/tool text cannot trigger it.
 5. Add an optional authenticated localhost pacing transport for benchmarks. It forwards only allowed Gemini generation paths to the official Google host, spaces Lite starts by 4.5 seconds and Flash starts by at least 13 seconds, and never retries. Daily exhaustion remains a stop condition. TrueForge owns every model turn.
-6. Move review decisions to a shared host-owned state; expose public commands and visible controls; retain nonce and focus guards. Add one-line requirement evidence instead of per-hunk chat.
+6. Move review decisions to a shared host-owned state; expose public commands and visible controls; retain nonce and focus guards. Review cancellation also aborts the model run instead of leaving it to make more calls. Add one-line requirement evidence instead of per-hunk chat.
 7. Run official test-electron/Mocha checks against Windows and a real Remote WSL extension host. Patch vulnerable test-only `glob` and `minimatch` dependencies; add editor commands to Windows/Linux CI.
 8. Rehearse real Flask tasks separately in a disposable Remote WSL checkout. Keep physical-key and recording checklist items explicitly pending until exercised.
 

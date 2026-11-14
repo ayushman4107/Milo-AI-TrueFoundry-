@@ -22,6 +22,7 @@ test('bounded discovery preserves diverse roles and paginates without lost or du
 });
 test('clipped reads report actual bounds and cannot authorize omitted source',()=>{
  const w=new Workbench([{path:'a.py',text:'def a():\n    return 1\n# unread\n'}]);const hit=w.trace('a')[0]!;
+ assert.equal(w.openFile(w.files()[0]!).total_lines,3);
  const read=w.readBounded(hit.id,'a.py',1,999,2,4000);assert.equal(read.end_line,2);assert.equal(read.next_line,3);assert.equal(read.clipped,true);assert.equal(read.total_lines,3);
  assert.throws(()=>w.stageExact({path:'a.py',revision:read.revision,expected:'# unread',replacement:'# changed'}),/evidence/);
  assert.throws(()=>w.readBounded('invented','a.py',1,999,2,4000),/discovery/);

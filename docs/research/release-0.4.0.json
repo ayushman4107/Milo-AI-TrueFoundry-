@@ -1,0 +1,9 @@
+{
+  "version": "0.4.0",
+  "bundleSHA256": "5AD0F9FC652D3BFFF6627B9503282482494638F46C82D4AD110C2FF72C829056",
+  "installedBundleMatches": true,
+  "coreTests": 84,
+  "windowsCommandScenarios": 5,
+  "wslCommandScenarios": 5,
+  "modelEvaluation": "partial; daily free quota exhausted; see EVALUATION.md"
+}

@@ -4,7 +4,9 @@ Gemini credentials are configured in a private native WSL TrueForge instance. Th
 
 The [compact trial record](research/model-evaluation-status.json) retains failed pilots, interrupted tuning attempts and the repeated benchmark separately. The [measurement table](research/model-evaluation-table.md) reports actual denominators, latency and provider-reported tokens. **Task A's pass count covers behavior, syntax and selection scope; it is not a complete rubric score.** Its docstring must also list unset/empty, 0, false, no, off and n with case-insensitivity. Missing entries cannot be excused by a passing behavior test.
 
-The stronger configured Flash model reported daily free-quota exhaustion. Its scheduled runs are explicitly skipped; this is not a completed two-model comparison and neither Gemini model is a local 7–8B stress test. Per-minute failures were recorded before adding conservative pacing. There is no claim that free-tier pacing fits the four-minute recording target.
+Both configured models reported daily free-quota exhaustion. Lite reported its 500-request daily limit. Of 36 scheduled final-matrix attempts, 14 completed and 22 were skipped: A behavior/syntax/scope 4/4, B 0/4 (three iteration-limit failures and one quota block), invalid-key recovery 3/3, closed-port recovery 2/3. Manual review found incomplete empty/unset documentation in all four A docstrings, so none is a full Task A pass. Latest read-clipping, cancellation and documentation-guidance repairs have deterministic coverage but need model re-evaluation after quota resets.
+
+This is not a completed two-model comparison and neither Gemini model is a local 7–8B stress test. The separate Remote WSL live run passed A's apply/verify/undo sequence, failed B at the iteration cap and hit daily quota during C; disk contents stayed unchanged. Per-minute failures were recorded before adding conservative pacing. There is no claim that free-tier pacing fits the four-minute recording target. Token figures are subtotals of model-message usage events, not a billing statement or a complete measurement of every harness-internal call.
 
 ## Reproduce the benchmark
 
