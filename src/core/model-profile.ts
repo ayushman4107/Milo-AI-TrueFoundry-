@@ -1,4 +1,4 @@
-export function modelProfile(small:boolean){return {name:small?'small':'standard',contextBytes:small?6000:24000,readLines:small?80:200,readBytes:small?4000:8000,iterationLimit:small?40:30};}
+export function modelProfile(small:boolean){return {name:small?'small':'standard',contextBytes:small?6000:24000,readLines:small?80:200,readBytes:small?4000:8000,iterationLimit:small?24:30};}
 /** Provider input tokens contain harness overhead; only comparable output text is calibrated. */
 export class TokenEstimate {
   #ratios=new Map<string,{ratio:number;samples:number}>();

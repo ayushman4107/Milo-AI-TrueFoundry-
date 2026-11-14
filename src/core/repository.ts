@@ -19,10 +19,10 @@ export async function repositoryPaths(root:string,signal?:AbortSignal):Promise<s
   const paths=[...new Set(result.output.split('\0').filter(Boolean))].sort();if(paths.length>20000)throw new Error('Repository exceeds 20,000-file limit');
   for(const path of paths)validatePath(path);return paths;
 }
-export async function captureRepository(root:string,buffers:ReadonlyMap<string,string>=new Map(),signal?:AbortSignal):Promise<RepositorySnapshot>{
+export async function captureRepository(root:string,buffers:ReadonlyMap<string,string>=new Map(),signal?:AbortSignal,includeSensitivePaths:ReadonlySet<string>=new Set()):Promise<RepositorySnapshot>{
   const paths=[...new Set([...await repositoryPaths(root,signal),...buffers.keys()])].sort();const files:TreeFile[]=[];const excluded:RepositorySnapshot['excluded']=[];let total=0;
   for(const path of paths){signal?.throwIfAborted();validatePath(path);
-    if(/(?:^|\/)(?:\.env(?:\..*)?|credentials(?:\..*)?|secrets?(?:\..*)?|\.git|\.ssh|\.aws)(?:\/|$)/i.test(path)){excluded.push({path,reason:'sensitive path'});continue;}
+    if(/(?:^|\/)(?:\.env(?:\..*)?|credentials(?:\..*)?|secrets?(?:\..*)?|\.git|\.ssh|\.aws)(?:\/|$)/i.test(path)&&!includeSensitivePaths.has(path)){excluded.push({path,reason:'sensitive path'});continue;}
     try{const physical=await containedPath(root,path);const stat=await lstat(physical);if(!stat.isFile()||stat.size>4_000_000)throw new Error('Not a regular file or over 4 MB');
       let bytes:Uint8Array=await readFile(physical);const buffer=buffers.get(path);
       if(buffer!==undefined){const bom=bytes[0]===239&&bytes[1]===187&&bytes[2]===191;bytes=Buffer.from((bom&&!buffer.startsWith('\ufeff')?'\ufeff':'')+buffer,'utf8');}

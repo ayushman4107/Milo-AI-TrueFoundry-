@@ -29,11 +29,11 @@
     "user.tool_approval"
   ],
   "sessions": [
-    "http://127.0.0.1:18790/sessions/01m7djmdv8fv8m8cr7c7fmrhqd",
-    "http://127.0.0.1:18790/sessions/01m7djme27ze3cn5068497dtc4"
+    "http://127.0.0.1:18790/sessions/01m7dq45fww3pgg81hfa7tr6dd",
+    "http://127.0.0.1:18790/sessions/01m7dq45hfpg7grw5mcfbf8pk1"
   ],
   "scoutSessions": [
-    "http://127.0.0.1:18790/sessions/01m7djmdc33qdpm195pdhz49vc"
+    "http://127.0.0.1:18790/sessions/01m7dq45cbeabcnxjdjfcqt232"
   ],
   "faultInjection": {
     "dropped": true,

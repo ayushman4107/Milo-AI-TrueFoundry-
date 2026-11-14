@@ -14,8 +14,8 @@ pnpm build
 Press F5 with the included **Run Milo AI** launch configuration. Alternatively:
 
 ```sh
-pnpm dlx @vscode/vsce@4.1.1 package --no-dependencies --out .runtime/milo-ai-0.3.0.vsix
-code --install-extension .runtime/milo-ai-0.3.0.vsix
+pnpm dlx @vscode/vsce@4.1.1 package --no-dependencies --out .runtime/milo-ai-0.4.0.vsix
+code --install-extension .runtime/milo-ai-0.4.0.vsix
 ```
 
 Configure these user/machine settings:
@@ -38,7 +38,7 @@ The review screen offers **Verify all staged hunks** when a trusted command is c
 
 Review shortcuts: **j/k** move, **a/r** accept/reject, **u** undo a decision. Formatting-only Python files are collapsed and unchecked. **Milo: Expand to enclosing Python function** explicitly expands selection. Disjoint stale edits rebase only at unique exact anchors with a new local confirmation; overlaps stop apply.
 
-Enable `milo.scout` for a separate read-only session and advisory work order; this adds model usage. `milo.smallModel` (or **Milo: Toggle small-model preset**) reduces read/context limits and raises the bounded iteration limit. Both agents choose their own reads. **Milo: Retry with note** keeps visible context but starts a fresh attempt. **Milo: Setup doctor** checks runtime/models, Git and Python; MCP outbound permission remains unknown until a tool call succeeds.
+Enable `milo.scout` for a separate read-only session and advisory work order; this adds model usage. `milo.smallModel` (or **Milo: Toggle small-model preset**) reduces read/context limits and caps repository runs at 24 iterations (inline runs use 12). Both agents choose their own reads. **Milo: Retry with note** keeps visible context but starts a fresh attempt. **Milo: Setup doctor** checks runtime/models, Git and Python; MCP outbound permission remains unknown until a tool call succeeds.
 
 **Milo: Save applied changes with journal** explicitly saves accepted text when disk still matches its pre-apply baseline. Resolve existing unsaved baseline changes first. It fsyncs snapshots and per-file replacements and marks completion. Activation waits for recovery before new commands; incomplete saves roll back only owned post-images, preserving dirty buffers and conflicting edits. Interrupted saves can temporarily leave some files changed. Journals retain source snapshots in extension global storage. Ordinary Save All does not use this journal.
 
@@ -46,7 +46,7 @@ Repository capture requires Git: at most 20,000 paths, 4 MB/file and 64 MB total
 
 ## Tests
 
-The current suite has 76 tests, including 1,000 seeded cases. CI runs type checking, tests, build and dependency audit on Windows and Linux. Set `MILO_PYTHON` when Python is not on PATH. Network-restricted runners must allow authenticated ephemeral localhost MCP test connections.
+The current suite has 84 tests, including 1,000 seeded cases. CI runs type checking, tests, build and dependency audit on Windows and Linux. Set `MILO_PYTHON` when Python is not on PATH. Network-restricted runners must allow authenticated ephemeral localhost MCP test connections.
 
 Build integration probes with `node scripts/build.mjs --editor-test --contract`. Launch a real editor test using an isolated profile and:
 
@@ -78,7 +78,7 @@ These use a real TrueForge server with deliberately scripted localhost providers
 
 The production-component probe exercises 401 failover, old-attempt revocation, discovery, staged reads, context budgeting, same-turn approval, local review, apply and undo. It requires a working `MILO_PYTHON`. The older contract probe adds denial, late approval, paused/active cancellation and sandbox-free compaction. Neither proves real-model coding quality.
 
-On this development machine Windows Application Control blocks native TrueForge SQLite. Debian WSL runs the harness. Windows and WSL loopback are different for MCP callbacks: use VS Code Remote WSL so the extension and harness share a network namespace. Native Windows editor behavior and WSL harness integration have been tested separately; a real-model Remote WSL UI rehearsal is still required. Do not disable application-control or firewall policy.
+On this development machine Windows Application Control blocks native TrueForge SQLite. Debian WSL runs the harness. Windows and WSL loopback are different for MCP callbacks: use VS Code Remote WSL so the extension and harness share a network namespace. Public command tests passed in both native Windows and an actual Remote WSL extension host. Physical keys and the complete real-model Flask UI recording are separate, still-unchecked rehearsals. Do not disable application-control or firewall policy.
 
 ## Required Flask repository
 
@@ -87,3 +87,11 @@ pnpm exec tsx scripts/flask-trace.ts <Flask-3.1.3-checkout>
 ```
 
 This retrieval check observed 181 non-hidden source/document/config files and all six roles for `routes_command`, including tests/docs using its decorator alias `routes`. It is retrieval validation, not a claim to have completed the competition's coding tasks.
+
+## Command and model rehearsals
+
+Build command tests with `node scripts/build.mjs --command-test`, then run `pnpm test:editor` (Linux CI uses xvfb-run). Set `MILO_VSCODE_EXECUTABLE` to use an installed editor. The runner creates an isolated profile and disposable Git workspace. Physical-key checks are in [KEYBOARD-REHEARSAL.md](KEYBOARD-REHEARSAL.md).
+
+[Provider research and fixes](PROVIDER-AND-REHEARSAL.md) documents free-tier limits and actual WSL setup. The example provider manifest is in examples/trueforge-model-provider.json. Configure a private key-file path with MILO_GEMINI_KEY_FILE and run scripts/configure-gemini.mjs; it makes no generation call. Model availability and project quotas must be checked before recording.
+
+Public dotenv fixtures needed by tests can be included via exact milo.verifyFixturePaths entries. Review each file first. This affects verification copies only; it does not expose those paths to model retrieval.

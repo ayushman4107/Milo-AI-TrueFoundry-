@@ -2,7 +2,7 @@
 
 A VS Code coding agent built on TrueForge for the TrueFoundry Forge-a-thon at Techfest, IIT Bombay. It makes repository context visible and changes reviewable and reversible.
 
-**Status:** an implemented VS Code MVP with tested editor, MCP and TrueForge integrations. Real-model Flask task quality is not yet evaluated. This is not a production-hardening claim.
+**Status:** an implemented VS Code MVP with tested editor, MCP and TrueForge integrations. Real Gemini evaluation is in progress; free-tier quota and model iteration failures are recorded. This is not a production-hardening claim.
 
 ## Working features
 
@@ -23,7 +23,8 @@ All model execution goes through TrueForge. The model never receives a direct ed
 
 ## Validation
 
-- 76 passing tests, including 1,000 seeded edit/review/undo cases; strict TypeScript and extension build pass.
+- 84 passing tests, including 1,000 seeded edit/review/undo cases; strict TypeScript and extension build pass.
+- Four public-command scenarios also pass on Windows and Remote WSL, with default-shortcut collision checks and host-owned hunk decisions.
 - Nine checks in a real VS Code host: activation, two-file apply, Unicode/CRLF, unsaved disk preservation, stale rejection, undo, cancellation, path containment and workbench opening.
 - Production Milo components tested against real TrueForge: separate Scout, forced provider 401, fallback, discovery, staging/rereading, context, same-turn approval, local review, apply and undo. Dropping the approval stream produces one review and no extra model turn. The provider is deliberately scripted.
 - Live child-process cancellation, crash-recovery conflicts, import origins, binary copying, differential tests and review-script keyboard/message handling are covered.
@@ -48,9 +49,13 @@ Context budgets enforce bytes; token estimates remain approximate. Inventory cov
 
 Verification is a trusted command in a temporary copy, **not an OS sandbox**. Environment filtering, limits and ordinary process-tree cancellation do not confine hostile code or deliberately escaped descendants. Journaled saves support guarded recovery, not cross-file atomicity or defense against malicious local filesystem races. Conflicting disk edits and dirty buffers are preserved.
 
-Name warnings and checklist evidence are advisory. Import reordering and variable renaming are not labeled harmless formatting. Retry uses fresh revisions and a steering note, not old write capabilities. Per-hunk chat is deferred. Real-model evaluation, complete Flask A/B/C demonstrations, Remote WSL UI rehearsal, broader disconnect coverage and native keyboard interaction validation remain release gates. The review layout was observed in VS Code and its script is tested; desktop automation could not complete the native keyboard exercise.
+Name warnings and checklist evidence are advisory. Import reordering and variable renaming are not labeled harmless formatting. Retry uses fresh revisions and a steering note, not old write capabilities. Per-hunk chat is excluded from Round 1. Public commands pass in actual Windows and Remote WSL extension hosts. Complete real-model A/B/C demonstrations, the two-model repeated benchmark, broader disconnect coverage and physical-key/recording checks remain gates; see the evaluation for actual completed attempts and failures.
 
 ## Research and evidence
+
+- [Provider, benchmark and keyboard implementation](docs/PROVIDER-AND-REHEARSAL.md)
+- [Physical-key checklist](docs/KEYBOARD-REHEARSAL.md)
+- [Eight-heading write-up draft](docs/SUBMISSION-DRAFT.md)
 
 - [Accuracy/recovery research and implementation](docs/ACCURACY-AND-RECOVERY.md)
 - [Real-model evaluation and rehearsal](docs/EVALUATION.md)

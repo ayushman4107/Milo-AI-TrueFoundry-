@@ -25,3 +25,8 @@ jobs:
       - run: pnpm build
       - run: pnpm test
       - run: pnpm audit --audit-level low
+      - run: node scripts/build.mjs --command-test
+      - if: runner.os == 'Linux'
+        run: xvfb-run -a pnpm test:editor
+      - if: runner.os == 'Windows'
+        run: pnpm test:editor

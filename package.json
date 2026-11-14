@@ -2,7 +2,7 @@
   "name": "milo-ai",
   "displayName": "Milo AI",
   "publisher": "ayushman4107",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
   "type": "module",
   "description": "Evidence-aware, reversible coding changes through TrueForge",
@@ -84,6 +84,51 @@
       {
         "command": "milo.toggleSmallModel",
         "title": "Milo: Toggle small-model preset"
+      },
+      {
+        "command": "milo.review.rejectNoise",
+        "title": "Milo: Reject formatting-only hunks",
+        "enablement": "milo.reviewActive"
+      },
+      {
+        "command": "milo.review.undoDecision",
+        "title": "Milo: Undo hunk decision",
+        "enablement": "milo.reviewActive"
+      },
+      {
+        "command": "milo.review.previous",
+        "title": "Milo: Previous hunk",
+        "enablement": "milo.reviewActive"
+      },
+      {
+        "command": "milo.review.accept",
+        "title": "Milo: Accept current hunk",
+        "enablement": "milo.reviewActive"
+      },
+      {
+        "command": "milo.review.next",
+        "title": "Milo: Next hunk",
+        "enablement": "milo.reviewActive"
+      },
+      {
+        "command": "milo.review.reject",
+        "title": "Milo: Reject current hunk",
+        "enablement": "milo.reviewActive"
+      },
+      {
+        "command": "milo.review.confirm",
+        "title": "Milo: Apply selected hunks",
+        "enablement": "milo.reviewActive"
+      },
+      {
+        "command": "milo.review.verify",
+        "title": "Milo: Verify all staged hunks",
+        "enablement": "milo.reviewActive"
+      },
+      {
+        "command": "milo.review.cancel",
+        "title": "Milo: Cancel review",
+        "enablement": "milo.reviewActive"
       }
     ],
     "configuration": {
@@ -128,7 +173,7 @@
         "milo.smallModel": {
           "type": "boolean",
           "default": false,
-          "description": "Use shorter reads, a smaller context budget and a larger bounded iteration limit.",
+          "description": "Use shorter reads, smaller context and a 24-iteration repository limit. Inline edits use 12 iterations.",
           "scope": "machine"
         },
         "milo.scout": {
@@ -142,15 +187,63 @@
           "default": "",
           "description": "Python module whose import must resolve inside the temporary tree. Empty auto-detects a single src package.",
           "scope": "machine"
+        },
+        "milo.verifyFixturePaths": {
+          "scope": "machine",
+          "type": "array",
+          "description": "Exact Git-visible fixture paths to include despite secret-name exclusions during verification only. Use only for reviewed non-secret test data; never API keys.",
+          "items": {
+            "type": "string"
+          },
+          "default": []
         }
       }
-    }
+    },
+    "keybindings": [
+      {
+        "command": "milo.inline",
+        "when": "editorTextFocus && editorHasSelection && isWorkspaceTrusted",
+        "key": "ctrl+k ctrl+alt+i",
+        "mac": "cmd+k ctrl+alt+i"
+      },
+      {
+        "command": "milo.review.accept",
+        "when": "milo.reviewActive && !inputFocus",
+        "key": "ctrl+k ctrl+alt+a",
+        "mac": "cmd+k ctrl+alt+a"
+      },
+      {
+        "command": "milo.review.reject",
+        "when": "milo.reviewActive && !inputFocus",
+        "key": "ctrl+k ctrl+alt+r",
+        "mac": "cmd+k ctrl+alt+r"
+      },
+      {
+        "command": "milo.review.confirm",
+        "when": "milo.reviewActive && !inputFocus",
+        "key": "ctrl+k ctrl+alt+enter",
+        "mac": "cmd+k ctrl+alt+enter"
+      },
+      {
+        "command": "milo.cancel",
+        "when": "isWorkspaceTrusted && !inputFocus",
+        "key": "ctrl+k ctrl+alt+q",
+        "mac": "cmd+k ctrl+alt+q"
+      },
+      {
+        "command": "milo.undo",
+        "when": "isWorkspaceTrusted && !inputFocus",
+        "key": "ctrl+k ctrl+alt+u",
+        "mac": "cmd+k ctrl+alt+u"
+      }
+    ]
   },
   "scripts": {
     "build": "node scripts/build.mjs",
     "research:contract": "node scripts/runtime-contract.mjs",
     "test": "tsx --test tests/*.test.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:editor": "node scripts/run-editor-tests.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "1.32.2",
@@ -159,9 +252,13 @@
     "zod": "4.6.7"
   },
   "devDependencies": {
+    "@types/mocha": "10.0.10",
     "@types/node": "22.15.30",
     "@types/vscode": "1.95.0",
+    "@vscode/test-electron": "3.1.0",
     "esbuild": "0.25.12",
+    "jsonc-parser": "3.3.1",
+    "mocha": "12.0.3",
     "tsx": "4.20.3",
     "typescript": "5.8.3"
   },

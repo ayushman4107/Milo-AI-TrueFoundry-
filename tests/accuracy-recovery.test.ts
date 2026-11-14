@@ -34,6 +34,15 @@ test('repository capture covers tracked binary, untracked files and dirty buffer
     const again=await captureRepository(dir);assert.notEqual(tree.fingerprint,again.fingerprint);
   }finally{await rm(dir,{recursive:true,force:true});}
 });
+test('verification fixture exceptions require exact paths and never change default model capture',async()=>{
+ const dir=await mkdtemp(join(tmpdir(),'milo-fixture-test-'));
+ try{await runProcess({executable:'git',args:['init',dir]});await mkdir(join(dir,'tests'));await writeFile(join(dir,'tests','.env'),'PUBLIC_FIXTURE=yes');await writeFile(join(dir,'tests','.env.private'),'secret');
+  const normal=await captureRepository(dir);assert.equal(normal.files.length,0);
+  const allowed=await captureRepository(dir,new Map(),undefined,new Set(['tests/.env']));assert.deepEqual(allowed.files.map(f=>f.path),['tests/.env']);assert.equal(allowed.complete,false);
+  assert.equal((await captureRepository(dir)).files.length,0);
+  assert.equal((await captureRepository(dir,new Map(),undefined,new Set(['tests/']))).files.length,0);
+ }finally{await rm(dir,{recursive:true,force:true});}
+});
 test('symbol index invalidates without choosing edits',()=>{const index=new SymbolIndex();index.update('a.py','def foo(): pass');assert.deepEqual(index.find('foo'),['a.py']);index.update('a.py','def bar(): pass');assert.deepEqual(index.find('foo'),[]);index.invalidate('a.py');assert.deepEqual(index.names(),[]);});
 test('Python analysis resolves real scopes, flags invented globals and maps Unicode offsets',async()=>{
   const text='\ufeff# 文\r\nimport os\r\ndef existing(x):\r\n    """A nearby convention."""\r\n    return os.path.join(x, missing_helper())\r\n';

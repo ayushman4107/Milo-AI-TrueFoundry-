@@ -1,5 +1,5 @@
 export class HarnessFailure extends Error {
-  constructor(readonly kind: 'auth' | 'unreachable' | 'transient' | 'disconnect' | 'harness' | 'invalid', message: string) { super(message); }
+  constructor(readonly kind: 'auth' | 'unreachable' | 'transient' | 'rejected' | 'disconnect' | 'harness' | 'invalid', message: string) { super(message); }
 }
 export interface HarnessDriver<T> {
   attempt(model: string, request: string, signal: AbortSignal): Promise<T>;
@@ -23,7 +23,7 @@ export class ModelFailover {
       try { const result = await options.driver.attempt(model, options.request, options.signal); options.signal.throwIfAborted(); return result; }
       catch (error) {
         options.signal.throwIfAborted(); last = error;
-        if (!(error instanceof HarnessFailure) || !['auth','unreachable','transient'].includes(error.kind) || options.hasSideEffects()) throw error;
+        if (!(error instanceof HarnessFailure) || !['auth','unreachable','transient','rejected'].includes(error.kind) || options.hasSideEffects()) throw error;
         await options.driver.abandon(); options.signal.throwIfAborted();
         this.#blockedUntil.set(model, this.now() + 120000);
       }

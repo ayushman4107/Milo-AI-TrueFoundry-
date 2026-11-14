@@ -39,3 +39,7 @@ Primary references: [Node process groups](https://nodejs.org/api/child_process.h
 The [real-harness fault report](research/reconnect-contract-observed.json) records one review, two turns (failed primary and healthy fallback), two subscriptions and a separate Scout session. Providers are scripted. Fault injection exposed a replay/pause deadlock; tracking already-approved call IDs and skipping historical pauses corrected it.
 
 Real-model evaluation is blocked by missing configured providers. The runner and [rehearsal protocol](EVALUATION.md) are ready; no A/B/C success rate or video result is fabricated. Native keyboard interaction and full Remote WSL UI remain unverified. Per-hunk chat is deferred as recommended in the supplied notes. Exact tokenization, OS sandboxing, adversarial filesystem-race defense and cross-file atomicity remain limits.
+
+## Follow-up: 0.4.0
+
+The missing-provider status above is historical. Gemini is configured, real trials and Remote WSL command rehearsals have run, and quota/model failures are retained. See [provider research](PROVIDER-AND-REHEARSAL.md) and [current evaluation](EVALUATION.md) for measured results and remaining gates.

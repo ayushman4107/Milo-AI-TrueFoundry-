@@ -48,14 +48,14 @@ async function main(){
       let name='';let args:Record<string,unknown>={};let completion='Synthetic workflow complete.';
       if(scoutMode){assert(!tools.includes('stage_edit'));assert(!tools.includes('submit_for_review'));
         if(messages.length===0){name='trace_exemplar';args={symbol:'inspect_command'};}
-        else if(messages.length===1){const h=(last as {id:string}[])[0]!;name='read_evidence';args={discovery_id:h.id,path:file.path,start_line:1,end_line:2};}
+        else if(messages.length===1){const h=(last as {hits:{id:string}[]}).hits[0]!;name='read_evidence';args={discovery_id:h.id,path:file.path,start_line:1,end_line:2};}
         else completion=JSON.stringify([{path:file.path,startLine:1,endLine:2,reason:'Implementation read through Scout capability'}]);
       }else{
       if(step===0){name='trace_exemplar';args={symbol:'inspect_command'};}
-      if(step===1){hit=(last as {id:string}[])[0]!;assert(hit.id);name='read_evidence';args={discovery_id:hit.id,path:file.path,start_line:1,end_line:2};}
+      if(step===1){hit=(last as {hits:{id:string}[]}).hits[0]!;assert(hit.id);name='read_evidence';args={discovery_id:hit.id,path:file.path,start_line:1,end_line:2};}
       if(step===2){revision=(last as {revision:string}).revision;assert(revision);name='stage_edit';const start=file.text.indexOf('1');args={path:file.path,revision,span:{start,end:start+1},expected:'1',replacement:'2'};}
       if(step===3){name='trace_exemplar';args={symbol:'inspect_command'};}
-      if(step===4){hit=(last as {id:string}[])[0]!;name='read_evidence';args={discovery_id:hit.id,path:file.path,start_line:1,end_line:2};}
+      if(step===4){hit=(last as {hits:{id:string}[]}).hits[0]!;name='read_evidence';args={discovery_id:hit.id,path:file.path,start_line:1,end_line:2};}
       if(step===5){assert((last as {text:string}).text.includes('return 2'));stagedRead=true;name='pack_context';args={budget_bytes:1000};}
       if(step===6){assert((last as {bytes:number}).bytes<=1000);name='submit_for_review';}
       if(step===7)assert.equal((last as {status:string}).status,'applied',JSON.stringify(last));

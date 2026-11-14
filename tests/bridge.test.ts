@@ -20,10 +20,10 @@ test('real MCP transport exposes staged reads, budgets and exactly one host-revi
     assert.equal(rebindingStatus,403);
     await client.connect(transport);const tools=await client.listTools();assert.deepEqual(tools.tools.map(t=>t.name).sort(),['inspect_python_site','pack_context','read_evidence','stage_edit','submit_for_review','trace_exemplar']);
     async function call(name:string,args:Record<string,unknown>){const result=await client.callTool({name,arguments:args});assert(!result.isError,JSON.stringify(result));const content=result.content as {type:string;text:string}[];return JSON.parse(content[0]!.text);}
-    const hits=await call('trace_exemplar',{symbol:'action'});const read=await call('read_evidence',{discovery_id:hits[0].id,path:file.path,start_line:1,end_line:1});
+    const {hits}=await call('trace_exemplar',{symbol:'action'});const read=await call('read_evidence',{discovery_id:hits[0].id,path:file.path,start_line:1,end_line:1});
     const start=file.text.indexOf('1');await call('stage_edit',{path:file.path,revision:read.revision,span:{start,end:start+1},expected:'1',replacement:'2'});
     const stale=await client.callTool({name:'read_evidence',arguments:{discovery_id:hits[0].id,path:file.path,start_line:1,end_line:1}});assert.equal(stale.isError,true);
-    const hits2=await call('trace_exemplar',{symbol:'action'});const reread=await call('read_evidence',{discovery_id:hits2[0].id,path:file.path,start_line:1,end_line:1});assert(reread.text.includes('return 2'));
+    const {hits:hits2}=await call('trace_exemplar',{symbol:'action'});const reread=await call('read_evidence',{discovery_id:hits2[0].id,path:file.path,start_line:1,end_line:1});assert(reread.text.includes('return 2'));
     const pack=await call('pack_context',{budget_bytes:250});assert(pack.bytes<=250);assert(w.ledger().context.length>0);
     const result=await call('submit_for_review',{});assert.equal(result.after,'function action() { return 2; }\n');assert.equal(approvals,1);
     assert.equal((await client.callTool({name:'submit_for_review',arguments:{}})).isError,true);assert.equal(approvals,1);
@@ -49,7 +49,9 @@ test('timeline preserves shared-ID deltas and replay does not duplicate text',()
 test('failover classification only accepts the pinned harness terminal model-error format',()=>{
   assert.equal(terminalFailure('[Model Error] Request failed (401): credential').kind,'auth');
   assert.equal(terminalFailure('[Model Error] Request failed (503): busy').kind,'transient');
-  for(const message of ['401 provider failed','[MCP Error] Request failed (401): denied','assistant says [Model Error] Request failed (401): bad','[Model Error] Request failed (400): invalid schema'])assert.equal(terminalFailure(message).kind,'harness');
+  assert.equal(terminalFailure('[Model Error] Request failed (400): Bad Request').kind,'rejected');
+  assert.equal(terminalFailure('[Model Error] Cannot connect to API: connect ECONNREFUSED 127.0.0.1:34727').kind,'unreachable');
+  for(const message of ['401 provider failed','[MCP Error] Request failed (401): denied','assistant says [Model Error] Request failed (401): bad','[Model Error] Request failed (409): conflict','assistant says [Model Error] Cannot connect to API: connect ECONNREFUSED 127.0.0.1:1'])assert.equal(terminalFailure(message).kind,'harness');
 });
 test('Scout token cannot discover or invoke write tools and cannot authorize the patch endpoint',async()=>{
   const files=[{path:'a.js',text:'function a() { return 1; }'}];const c=new AbortController();const w=new Workbench(files);

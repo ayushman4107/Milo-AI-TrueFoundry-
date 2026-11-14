@@ -22,9 +22,22 @@ export class Workbench {
   files(): Snapshot[] { return [...this.#base.keys()].map(path => ({ path, text: this.overlay.read(path).text })); }
   addFile(file:Snapshot){this.#staging();if(this.#base.has(file.path))return;this.overlay.load(file);this.#base.set(file.path,file.text);}
   changes(){return this.changedFiles().map(f=>({path:f.path,before:this.#base.get(f.path)!,after:f.text}));}
-  openFile(file:Snapshot){this.addFile(file);return this.provenance.register({path:file.path,revision:this.overlay.read(file.path).revision,line:1,role:'reference',query:'explicit path',excerpt:''});}
+  openFile(file:Snapshot){this.addFile(file);const current=this.overlay.read(file.path);return {...this.provenance.register({path:file.path,revision:current.revision,line:1,role:'reference',query:'explicit path',excerpt:''}),total_lines:current.text.split(/\r?\n/).length};}
   changedFiles() { return this.files().filter(f => this.#base.get(f.path) !== f.text); }
   trace(symbol: string) { this.#staging(); return traceExemplar(this.files(), symbol).map(h => this.provenance.register(h)); }
+  discover(symbol:string,budgetBytes:number,offset=0){
+    this.#staging();if(!Number.isSafeInteger(offset)||offset<0||!Number.isSafeInteger(budgetBytes)||budgetBytes<2000||budgetBytes>24000)throw new Error('Invalid discovery page');
+    const raw=traceExemplar(this.files(),symbol);const roles=[...new Set(raw.map(h=>h.role))];const groups=roles.map(role=>raw.filter(h=>h.role===role));
+    const ordered:typeof raw[number][]=[];for(let i=0;groups.some(g=>g.length>i);i++)for(const group of groups)if(group[i])ordered.push(group[i]!);
+    const hits:ReturnType<ProvenanceLedger['register']>[]=[];
+    for(const hit of ordered.slice(offset)){
+      const candidate={...hit,excerpt:Array.from(hit.excerpt).slice(0,160).join(''),id:'00000000-0000-0000-0000-000000000000'};
+      if(Buffer.byteLength(JSON.stringify([...hits,candidate]))>budgetBytes)break;
+      hits.push(this.provenance.register(candidate));
+    }
+    if(!hits.length&&ordered.length>offset)throw new Error('A candidate exceeds this page budget; increase the budget');
+    return {hits,total:ordered.length,next:offset+hits.length<ordered.length?offset+hits.length:null,bytes:Buffer.byteLength(JSON.stringify(hits)),budgetBytes,note:'Candidate bytes only. Read near the returned line before staging; more pages are optional.'};
+  }
   read(discoveryId: string, path: string, startLine: number, endLine: number) {
     this.#staging(); const file = this.overlay.read(path);
     const text = this.provenance.read(discoveryId, { path, text: file.text }, startLine, endLine);
@@ -34,6 +47,23 @@ export class Workbench {
     const end = lines.slice(0, endLine).join('').length;
     this.#readRevisions.set(`${path}:${start}:${end}`, file.revision);
     return { text, revision: file.revision, span: { start, end }, path };
+  }
+  readBounded(id:string,path:string,start:number,requestedEnd:number,maxLines:number,maxBytes:number){
+    this.#staging();const text=this.overlay.read(path).text;const lines=text.match(/[^\n]*\n|[^\n]+$/g)??[''];
+    if(!Number.isSafeInteger(start)||!Number.isSafeInteger(requestedEnd)||start<1||requestedEnd<start||start>lines.length)throw new Error(`Use start_line 1–${lines.length} and end_line >= start_line`);
+    let end=Math.min(requestedEnd,start+maxLines-1,lines.length);
+    while(end>=start&&Buffer.byteLength(lines.slice(start-1,end).join(''))>maxBytes)end--;
+    if(end<start)throw new Error(`Line ${start} exceeds the ${maxBytes}-byte read budget`);
+    const read=this.read(id,path,start,end);
+    return {...read,start_line:start,end_line:end,total_lines:lines.length,next_line:end<lines.length?end+1:null,clipped:end!==requestedEnd,note:'Only the returned text/span is authorized read evidence.'};
+  }
+  stageExact(input: { path:string; revision:string; expected:string; replacement:string }) {
+    this.#staging();const file=this.overlay.read(input.path);
+    if(file.revision!==input.revision)throw new Error('Stale read; trace and read the staged file again');
+    if(!input.expected)throw new Error('Exact-text staging needs a nonempty anchor; use an observed span for insertion');
+    const start=file.text.indexOf(input.expected);
+    if(start<0||file.text.indexOf(input.expected,start+1)>=0)throw new Error('Expected text must occur exactly once; include more observed context');
+    return this.stage({...input,span:{start,end:start+input.expected.length}});
   }
   stage(input: { path: string; revision: string; span: Span; expected: string; replacement: string }) {
     this.#staging(); const file = this.overlay.read(input.path);

@@ -1,0 +1,29 @@
+{
+  "scope": "Actual Remote WSL extension, real TrueForge and Gemini; command-driven review, no physical keystrokes",
+  "rows": [
+    {
+      "task": "A",
+      "status": "failed",
+      "physicalKeys": false,
+      "error": "You have reached iteration limit of 12, please request again",
+      "diskUnchanged": true,
+      "elapsedMs": 125842
+    },
+    {
+      "task": "B",
+      "status": "failed",
+      "physicalKeys": false,
+      "error": "You have reached iteration limit of 24, please request again",
+      "diskUnchanged": true,
+      "elapsedMs": 242955
+    },
+    {
+      "task": "C",
+      "status": "failed",
+      "physicalKeys": false,
+      "error": "You have reached iteration limit of 12, please request again",
+      "diskUnchanged": true,
+      "elapsedMs": 116663
+    }
+  ]
+}

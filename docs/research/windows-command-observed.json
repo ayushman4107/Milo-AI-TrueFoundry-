@@ -1,0 +1,11 @@
+{
+  "status": "passed",
+  "observed": [
+    "inline, reject, decision undo, accept, apply, buffer-only save, run undo",
+    "all rejected: no writes",
+    "cancel: no writes and no review authority",
+    "default shortcut collision scan: VS Code 1.146.0, win32"
+  ],
+  "failures": 0,
+  "scope": "Public extension commands in a real editor against deterministic fake TrueForge; physical keys and real models are separate checks"
+}

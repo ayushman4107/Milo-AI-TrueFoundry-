@@ -1,0 +1,15 @@
+{
+  "scope": "Actual Remote WSL extension, real TrueForge and Gemini; command-driven review, no physical keystrokes",
+  "rows": [
+    {
+      "task": "A",
+      "status": "passed",
+      "physicalKeys": false,
+      "timeToReviewMs": 72600,
+      "diffTabOpened": true,
+      "verification": "Verification passed for 235 Git-visible files (0 excluded); exit 0.",
+      "diskUnchanged": true,
+      "elapsedMs": 83011
+    }
+  ]
+}
