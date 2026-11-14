@@ -12,7 +12,7 @@ pnpm typecheck
 pnpm test
 ```
 
-The Windows development run passed 13 tests. The CI workflow also requests Linux; a configured workflow is not evidence that a remote run passed.
+The current local run passed 41 tests, including 1,000 seeded cases. CI runs these checks on Windows and Linux and includes `pnpm audit --audit-level low`.
 
 ## Isolated TrueForge contract test
 
@@ -31,7 +31,7 @@ In a second terminal:
 TRUEFORGE_BASE_URL=http://127.0.0.1:18790 pnpm research:contract
 ```
 
-This uses a real TrueForge server and MCP transport with a deliberately scripted localhost model endpoint. It requires no paid API key. It verifies direct/deferred approvals, denial, paused/active cancellation, provider-error shape and sandbox-free compaction. It does not prove a real model can implement the Flask tasks.
+This uses a real TrueForge server and MCP transport with a deliberately scripted localhost model endpoint. It requires no paid API key. Ten checks cover direct/deferred approvals, denial, paused/active cancellation, late approvals, a local fence during a running tool, endpoint authentication, provider-error shape and sandbox-free compaction. Ephemeral fixture credentials are generated per run. It does not prove a real model can implement the Flask tasks.
 
 The probe writes its report to ignored `test-results/runtime-contract.json`; only reviewed, sanitized research results are committed. It removes its temporary model/MCP registrations on exit but leaves session history in the disposable database. No production or shared instance should be used.
 

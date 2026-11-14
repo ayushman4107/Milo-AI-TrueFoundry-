@@ -1,7 +1,7 @@
 // The provider is deliberately scripted: this measures the real harness, not model quality.
 import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
-import { randomUUID } from 'node:crypto';
+import { randomUUID, randomBytes } from 'node:crypto';
 import { writeFile, mkdir } from 'node:fs/promises';
 import { TrueForge, isEventDelta, mergeEventDelta } from '@truefoundry/trueforge-sdk';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
@@ -11,14 +11,20 @@ import { z } from 'zod';
 const baseUrl = process.env.TRUEFORGE_BASE_URL ?? 'http://127.0.0.1:18790';
 const host = new URL(baseUrl).hostname;
 assert(['localhost', '127.0.0.1', '[::1]'].includes(host), 'Run against a disposable local TrueForge instance only');
-const prefix = `milo-probe-${Date.now()}`;
+const prefix = `milo-probe-${randomUUID()}`;
+const probeToken = randomBytes(32).toString('hex');
+const deadline = AbortSignal.timeout(90_000);
 const results = { kind: 'scripted-provider-real-trueforge', baseUrl, checks: [], sessions: [] };
-const client = new TrueForge({ baseUrl, timeoutInSeconds: 30, maxRetries: 0 });
+const client = new TrueForge({ baseUrl, timeoutInSeconds: 10, maxRetries: 0, fetch: (input, init) => fetch(input, { ...init, signal: AbortSignal.any([deadline, ...(init?.signal ? [init.signal] : [])]) }) });
+const cleanupClient = new TrueForge({ baseUrl, timeoutInSeconds: 3, maxRetries: 0 });
 let executed = 0;
 let mode = 'tool';
 let toolStyle = 'direct';
 let lastTools = [];
 let slowRequested;
+let slowToolStarted;
+let toolDelay = 0;
+let executionAllowed = true;
 
 async function json(req) {
   let body = '';
@@ -29,7 +35,7 @@ async function json(req) {
   return body ? JSON.parse(body) : undefined;
 }
 async function listen(server) {
-  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+  await new Promise((resolve, reject) => { server.once('error', reject); server.listen(0, '127.0.0.1', resolve); });
   return server.address().port;
 }
 async function api(path, body, method = 'POST') {
@@ -44,13 +50,19 @@ async function api(path, body, method = 'POST') {
 }
 
 const mcp = createServer(async (req, res) => {
+  if (req.headers.authorization !== `Bearer ${probeToken}` || req.headers.origin) { res.writeHead(403).end(); return; }
+  if (req.url !== '/mcp') { res.writeHead(404).end(); return; }
   if (req.method !== 'POST') { res.writeHead(405).end(); return; }
   const server = new McpServer({ name: prefix, version: '0.1.0' });
   server.registerTool('review_changes', {
     description: 'Approve a synthetic batch. This research tool changes no files.',
     inputSchema: { batch_id: z.string() },
     annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true },
-  }, async () => { executed++; return { content: [{ type: 'text', text: 'synthetic batch reviewed' }] }; });
+  }, async () => {
+    if (toolDelay) { slowToolStarted?.(); await new Promise(resolve => setTimeout(resolve, toolDelay)); }
+    if (!executionAllowed) return { isError: true, content: [{ type: 'text', text: 'Local run revoked' }] };
+    executed++; return { content: [{ type: 'text', text: 'synthetic batch reviewed' }] };
+  });
   const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined });
   res.on('close', () => { void transport.close(); void server.close(); });
   try { await server.connect(transport); await transport.handleRequest(req, res, await json(req)); }
@@ -58,6 +70,8 @@ const mcp = createServer(async (req, res) => {
 });
 
 const provider = createServer(async (req, res) => {
+  if (req.headers.authorization !== `Bearer ${probeToken}` || req.headers.origin) { res.writeHead(403).end(); return; }
+  if (req.method !== 'POST' || req.url !== '/v1/chat/completions') { res.writeHead(404).end(); return; }
   try {
     const body = await json(req);
     if (mode === 'unauthorized') {
@@ -124,9 +138,14 @@ try {
   assert(health.ok, 'TrueForge must be healthy');
   const mcpPort = await listen(mcp);
   const providerPort = await listen(provider);
-  await api('/settings/model-providers', { manifest: { type: 'custom', name: prefix, base_url: `http://127.0.0.1:${providerPort}/v1`, models: [{ name: 'scripted', model_id: 'scripted', properties: { context_length: 16000 } }] } });
+  await api('/settings/model-providers', { manifest: { type: 'custom', name: prefix, auth: { api_key: probeToken }, base_url: `http://127.0.0.1:${providerPort}/v1`, models: [{ name: 'scripted', model_id: 'scripted', properties: { context_length: 16000 } }] } });
   registered = true;
-  await api('/settings/mcp-servers', { manifest: { type: 'remote', name: prefix, description: 'Milo isolated contract probe', url: `http://127.0.0.1:${mcpPort}/mcp` } });
+  await api('/settings/mcp-servers', { manifest: { type: 'remote', name: prefix, description: 'Milo isolated contract probe', url: `http://127.0.0.1:${mcpPort}/mcp`, auth: { type: 'header', headers: { Authorization: `Bearer ${probeToken}` } } } });
+  const unauthorized = await fetch(`http://127.0.0.1:${mcpPort}/mcp`, { method: 'POST', body: '{}' });
+  assert.equal(unauthorized.status, 403);
+  const browserRequest = await fetch(`http://127.0.0.1:${mcpPort}/mcp`, { method: 'POST', headers: { Authorization: `Bearer ${probeToken}`, Origin: 'https://untrusted.example' }, body: '{}' });
+  assert.equal(browserRequest.status, 403);
+  results.checks.push({ check: 'MCP probe rejects missing credentials and browser origins', status: 'passed' });
 
   for (const { deferred, allow } of [{ deferred: false, allow: true }, { deferred: true, allow: true }, { deferred: false, allow: false }]) {
     toolStyle = deferred ? 'deferred' : 'direct';
@@ -155,6 +174,26 @@ try {
   assert.equal(cancelled.data.state.status, 'cancelled');
   assert.equal(executed, beforeCancel);
   results.checks.push({ check: 'cancel paused approval without executing tool', status: 'passed', elapsedMs: Math.round(performance.now()-t0) });
+  await assert.rejects(client.sessions.createTurnEvents(pausedSession, paused.turnId, { events: [{ type: 'user.tool_approval', threadId: paused.paused.threadId, toolCallId: paused.paused.toolCalls[0].id, approval: { status: 'allow' } }] }));
+  assert.equal(executed, beforeCancel);
+  results.checks.push({ check: 'late approval cannot resume a cancelled turn', status: 'passed' });
+
+  toolDelay = 300;
+  const delayedSession = await openSession();
+  const delayed = await runUntil(delayedSession, e => e.type === 'turn.update' && e.state.status === 'paused');
+  const toolStarted = new Promise(resolve => { slowToolStarted = resolve; });
+  const delayedStream = await client.sessions.subscribeToTurn(delayedSession, delayed.turnId, { afterEventId: delayed.event.id });
+  await client.sessions.createTurnEvents(delayedSession, delayed.turnId, { events: [{ type: 'user.tool_approval', threadId: delayed.paused.threadId, toolCallId: delayed.paused.toolCalls[0].id, approval: { status: 'allow' } }] });
+  await Promise.race([toolStarted, new Promise((_, reject) => { const timer = setTimeout(() => reject(new Error('Slow MCP handler not reached')), 5000); timer.unref(); })]);
+  const delayedBefore = executed;
+  executionAllowed = false;
+  await client.sessions.cancel(delayedSession);
+  let delayedFinal;
+  for await (const event of delayedStream) if (event.type === 'turn.done') { delayedFinal = event; break; }
+  assert.equal(delayedFinal?.state.status, 'cancelled');
+  assert.equal(executed, delayedBefore);
+  results.checks.push({ check: 'local fence prevents late MCP action during cancellation', status: 'passed' });
+  toolDelay = 0; executionAllowed = true;
 
   mode = 'unauthorized';
   const failedSession = await openSession();
@@ -167,7 +206,7 @@ try {
   const slowSession = await openSession();
   const started = new Promise(resolve => { slowRequested = resolve; });
   const pending = runUntil(slowSession, e => e.type === 'turn.done');
-  await Promise.race([started, new Promise((_, reject) => { const timer = setTimeout(() => reject(new Error('Slow provider was not reached')), 8000); timer.unref(); })]);
+  await Promise.race([started, pending.then(() => { throw new Error('Stream ended before reaching slow provider'); }), new Promise((_, reject) => { const timer = setTimeout(() => reject(new Error('Slow provider was not reached')), 8000); timer.unref(); })]);
   const cancelStart = performance.now();
   await client.sessions.cancel(slowSession);
   const slowFinal = await pending;
@@ -186,7 +225,7 @@ try {
   await mkdir('test-results', { recursive: true });
   await writeFile('test-results/runtime-contract.json', JSON.stringify(results, null, 2));
 } finally {
-  for (const sessionId of results.sessions) await client.sessions.cancel(sessionId).catch(() => {});
+  for (const sessionId of results.sessions) await cleanupClient.sessions.cancel(sessionId).catch(() => {});
   if (registered) {
     await api(`/settings/mcp-servers/${prefix}`, undefined, 'DELETE').catch(() => {});
     await api(`/settings/model-providers/${prefix}`, undefined, 'DELETE').catch(() => {});

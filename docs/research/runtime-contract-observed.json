@@ -3,6 +3,10 @@
   "baseUrl": "http://127.0.0.1:18790",
   "checks": [
     {
+      "check": "MCP probe rejects missing credentials and browser origins",
+      "status": "passed"
+    },
+    {
       "check": "direct approval round-trip",
       "status": "passed",
       "toolSchemas": [
@@ -32,16 +36,24 @@
     {
       "check": "cancel paused approval without executing tool",
       "status": "passed",
-      "elapsedMs": 19
+      "elapsedMs": 17
+    },
+    {
+      "check": "late approval cannot resume a cancelled turn",
+      "status": "passed"
+    },
+    {
+      "check": "local fence prevents late MCP action during cancellation",
+      "status": "passed"
     },
     {
       "check": "provider 401 becomes terminal turn error",
       "status": "passed",
-      "elapsedMs": 62,
+      "elapsedMs": 63,
       "state": {
         "status": "error",
         "message": "[Model Error] Request failed (401): Synthetic invalid credential",
-        "completedAt": "2026-11-14T15:23:14.161Z",
+        "completedAt": "2026-11-14T15:56:20.261Z",
         "metrics": {
           "totalInputTokens": 0,
           "totalOutputTokens": 0,
@@ -52,7 +64,7 @@
     {
       "check": "cancel active provider stream",
       "status": "passed",
-      "elapsedMs": 17
+      "elapsedMs": 16
     },
     {
       "check": "compaction without sandbox",
@@ -64,12 +76,13 @@
     }
   ],
   "sessions": [
-    "01m7dafm270xzh43j8zpkkq5nb",
-    "01m7dafma82mb4zatffx086mtn",
-    "01m7dafmggtv1jpfz8mykg1w1v",
-    "01m7dafmp0h1a99hsw5j6hw5sw",
-    "01m7dafmskm4sqnw623hfjs7gr",
-    "01m7dafmvy58gdm7ne18h7b0ng",
-    "01m7dafn16yg6bjcq85bwvxpzd"
+    "01m7dcc7kdn5mmptkfstkneve1",
+    "01m7dcc7sdv16ya4a9mexf5yx1",
+    "01m7dcc7z6y5s7rkx0hgq9wg57",
+    "01m7dcc83k29v4nhwg0kep87vm",
+    "01m7dcc86mcfk5414k1p1rbvwe",
+    "01m7dcc8b7vfcsz4w5wpvff6ed",
+    "01m7dcc8dmre51mmvny9en573h",
+    "01m7dcc8g0js2k6ahthhjt3qef"
   ]
 }

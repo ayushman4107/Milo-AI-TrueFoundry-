@@ -1,7 +1,10 @@
 name: Core checks
 on: [push, pull_request]
+permissions:
+  contents: read
 jobs:
   core:
+    timeout-minutes: 10
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -17,3 +20,4 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm typecheck
       - run: pnpm test
+      - run: pnpm audit --audit-level low

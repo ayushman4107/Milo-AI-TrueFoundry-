@@ -23,13 +23,18 @@ All model execution belongs to TrueForge. The extension will expose editor capab
 - [Consolidated problem analysis and architecture](docs/research/RESEARCH.md)
 - [Deeper source review, measured contracts and design updates](docs/research/TRUEFORGE-DEEP-DIVE.md)
 - [Development and reproducible validation](docs/DEVELOPMENT.md)
+- [Adversarial retest, fixes and remaining release gates](docs/SECURITY-RETEST.md)
 
 ## Implemented and verified
 
 - Immutable read evidence, selection/range checks and staged proposal batches.
 - Individual changed blocks, one-use review decisions and guarded undo plans.
-- 13 passing core tests and strict TypeScript checks.
-- Seven passing contract checks against real TrueForge with a scripted localhost provider: direct/deferred approvals, denial, paused/active cancellation, 401 handling and compaction without sandbox.
+- One-use host commit tickets, async cancellation fencing and conservative recovery inspection.
+- Patch-bound verification receipts that become stale after patch, input, command or environment changes.
+- 41 passing tests (including 1,000 seeded edit/review/undo cases) and strict TypeScript checks.
+- Ten passing contract checks against real TrueForge with a scripted localhost provider, including late approvals and cancellation during an MCP call.
+
+Milo's dependencies audit clean. The separate TrueForge runtime has an unresolved advisory in its optional sandbox dependency; sandbox use remains disabled. See the retest report for exposure and limitations.
 
 The editor adapter, retrieval UI, real-model task runs and automatic model fallback are still to be built. Core plan generation is not a filesystem transaction.
 

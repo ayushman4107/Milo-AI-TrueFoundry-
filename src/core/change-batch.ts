@@ -1,4 +1,6 @@
 import { createHash, randomUUID } from 'node:crypto';
+import { LIMITS, validatePath, validateRange, validateText } from './validation.js';
+import { copyPlan } from './commit-coordinator.js';
 
 export type Snapshot = Readonly<{ path: string; text: string }>;
 export type Span = Readonly<{ start: number; end: number }>;
@@ -9,11 +11,13 @@ export type CommitPlan = Readonly<{ batchId: string; changes: readonly FileChang
 type BatchState = 'staging' | 'review' | 'authorized' | 'consumed' | 'cancelled';
 
 export function digest(text: string): string {
+  validateText(text);
   return createHash('sha256').update(text, 'utf8').digest('hex');
 }
 
 function validateSpan(text: string, span: Span): void {
-  if (!Number.isInteger(span.start) || !Number.isInteger(span.end) || span.start < 0 || span.end < span.start || span.end > text.length) {
+  validateRange(span);
+  if (span.end > text.length) {
     throw new Error('Invalid UTF-16 text range');
   }
   for (const offset of [span.start, span.end]) {
@@ -39,17 +43,28 @@ export class ChangeBatch {
   private readonly evidence = new Map<string, Evidence>();
   private readonly proposals = new Map<string, Proposal>();
   private accepted = new Set<string>();
+  private retainedCharacters = 0;
   private readonly selection: Readonly<{ path: string; span: Span }> | undefined;
 
   constructor(options: { selection?: { path: string; span: Span } } = {}) {
+    if (options.selection) { validatePath(options.selection.path); validateRange(options.selection.span); }
     this.selection = options.selection ? { path: options.selection.path, span: { ...options.selection.span } } : undefined;
   }
 
   observe(snapshot: Snapshot, span: Span): Evidence {
     this.require('staging');
+    validatePath(snapshot.path);
+    if (snapshot.text.length > LIMITS.file) throw new Error('File size limit exceeded');
+    validateText(snapshot.text);
     validateSpan(snapshot.text, span);
     const existing = this.snapshots.get(snapshot.path);
+    for (const path of this.snapshots.keys()) {
+      if (path !== snapshot.path && path.toLowerCase() === snapshot.path.toLowerCase()) throw new Error('Case alias conflicts with existing file');
+    }
     if (existing && existing.text !== snapshot.text) throw new Error('File changed during discovery; start a new batch');
+    if (this.selection?.path === snapshot.path) validateSpan(snapshot.text, this.selection.span);
+    if (this.evidence.size >= LIMITS.evidence || (!existing && this.snapshots.size >= LIMITS.files) || this.retainedCharacters + (existing ? 0 : snapshot.text.length) > LIMITS.batch) throw new Error('Batch capacity limit exceeded');
+    this.retainedCharacters += existing ? 0 : snapshot.text.length;
     this.snapshots.set(snapshot.path, Object.freeze({ ...snapshot }));
     const proof = Object.freeze({ id: randomUUID(), path: snapshot.path, digest: digest(snapshot.text), span: Object.freeze({ ...span }) });
     this.evidence.set(proof.id, proof);
@@ -58,6 +73,8 @@ export class ChangeBatch {
 
   stage(input: { evidenceId: string; span: Span; expected: string; replacement: string }): Proposal {
     this.require('staging');
+    if (input.replacement.length + input.expected.length > LIMITS.edit || this.proposals.size >= LIMITS.proposals || this.retainedCharacters + input.replacement.length > LIMITS.batch) throw new Error('Proposal size or capacity limit exceeded');
+    validateText(input.replacement);
     const proof = this.evidence.get(input.evidenceId);
     const source = proof && this.snapshots.get(proof.path);
     if (!proof || !source) throw new Error('Unknown read evidence');
@@ -71,8 +88,11 @@ export class ChangeBatch {
     for (const other of this.proposals.values()) {
       if (other.path === source.path && touches(other.span, input.span)) throw new Error('Overlapping proposals require a new batch');
     }
+    const projectedLength = [...this.proposals.values()].filter(p => p.path === source.path).reduce((size, p) => size + p.replacement.length - (p.span.end - p.span.start), source.text.length) + input.replacement.length - (input.span.end - input.span.start);
+    if (projectedLength > LIMITS.file) throw new Error('Resulting file size limit exceeded');
     const proposal = Object.freeze({ id: randomUUID(), evidenceId: proof.id, path: source.path, span: Object.freeze({ ...input.span }), replacement: input.replacement });
     this.proposals.set(proposal.id, proposal);
+    this.retainedCharacters += input.replacement.length;
     return proposal;
   }
 
@@ -99,7 +119,10 @@ export class ChangeBatch {
     for (const source of this.snapshots.values()) {
       const edits = [...this.proposals.values()].filter(p => p.path === source.path && this.accepted.has(p.id));
       if (!edits.length) continue;
-      if (current.get(source.path) !== source.text) throw new Error(`Stale review: ${source.path}`);
+      if (current.get(source.path) !== source.text) {
+        this.cancel();
+        throw new Error(`Stale review: ${source.path}; authorization revoked`);
+      }
       let after = source.text;
       for (const edit of edits.sort((a, b) => b.span.start - a.span.start)) {
         after = after.slice(0, edit.span.start) + edit.replacement + after.slice(edit.span.end);
@@ -123,6 +146,7 @@ export class ChangeBatch {
 }
 
 export function inversePlan(plan: CommitPlan, current: ReadonlyMap<string, string>): CommitPlan {
+  plan = copyPlan(plan);
   for (const file of plan.changes) {
     if (current.get(file.path) !== file.after) throw new Error(`Undo conflict: ${file.path}`);
   }
